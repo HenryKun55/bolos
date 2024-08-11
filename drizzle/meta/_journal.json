@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1722667325573,
+      "tag": "0000_broad_klaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1723335217115,
+      "tag": "0001_outstanding_lake",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1723343259974,
+      "tag": "0002_complex_shriek",
+      "breakpoints": true
+    }
+  ]
+}
