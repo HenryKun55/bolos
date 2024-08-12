@@ -38,7 +38,10 @@ export default function RootLayout() {
     Nunito_900Black,
   })
 
-  useDrizzleStudio(expoDb)
+  const DrizzleStudio = () => {
+    useDrizzleStudio(expoDb)
+    return null
+  }
 
   useEffect(() => {
     if (loaded) {
@@ -51,20 +54,23 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
-      <QueryProvider>
+    <>
+      {__DEV__ && <DrizzleStudio />}
+      <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
         <SQLiteProvider>
-          <Stack>
-            <Stack.Screen
-              name="(app)"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen name="+not-found" />
-          </Stack>
+          <QueryProvider>
+            <Stack>
+              <Stack.Screen
+                name="(app)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </QueryProvider>
         </SQLiteProvider>
-      </QueryProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </>
   )
 }

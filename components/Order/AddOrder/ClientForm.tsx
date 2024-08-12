@@ -4,12 +4,14 @@ import { View, Text, Button } from 'react-native'
 import { FormData } from './validator'
 import { useFetchClients } from '@/database/api/clients'
 import { ProductForm } from './ProductForm'
+import { useAndroidPlatform } from '@/hooks/usePlatform'
 
 type ClientFormProps = {
   control: Control<FormData>
 }
 
 const ClientForm = ({ control }: ClientFormProps) => {
+  const isAndroid = useAndroidPlatform()
   const { data } = useFetchClients()
   const { fields, remove, append } = useFieldArray({
     control,
@@ -22,7 +24,7 @@ const ClientForm = ({ control }: ClientFormProps) => {
         <Controller
           key={field.id}
           render={({ field: { value, onChange, onBlur, disabled } }) => (
-            <View>
+            <View className="mb-2">
               <Text className="text-white">Escolha o cliente</Text>
               <Picker
                 selectedValue={value.clientId}
@@ -38,14 +40,14 @@ const ClientForm = ({ control }: ClientFormProps) => {
                     key={item.id}
                     label={item.name}
                     value={item.id}
-                    color="white"
+                    color={isAndroid ? '' : 'white'}
                   />
                 ))}
               </Picker>
               <ProductForm nestedIndex={index} control={control} />
               <Button
                 title="Remover cliente"
-                color="white"
+                color={isAndroid ? '' : 'white'}
                 onPress={() => remove(index)}
               />
             </View>
@@ -56,7 +58,7 @@ const ClientForm = ({ control }: ClientFormProps) => {
       ))}
       <Button
         title="Adicionar Cliente"
-        color="white"
+        color={isAndroid ? '' : 'white'}
         onPress={() =>
           append({
             clientId: data?.length ? data[0].id : '0',

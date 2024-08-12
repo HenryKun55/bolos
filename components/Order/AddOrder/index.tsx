@@ -75,6 +75,7 @@ export const AddOrder = () => {
               </Text>
 
               <ClientForm control={control} />
+              <View className="my-2" />
               <ExchangeForm control={control} />
               <TouchableOpacity
                 className="mt-5 border border-white"

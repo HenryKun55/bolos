@@ -1,15 +1,18 @@
 import { Control, Controller, useFieldArray } from 'react-hook-form'
-import { Button, Text, View } from 'react-native'
+import { Button, View } from 'react-native'
 import { FormData } from './validator'
 import { useFetchProducts } from '@/database/api/products'
 import { Picker } from '@react-native-picker/picker'
 import { Input } from '@/components/Input'
+import { useAndroidPlatform } from '@/hooks/usePlatform'
+import { cn } from '@/lib/utils'
 
 type ExchangeFormProps = {
   control: Control<FormData>
 }
 
 export const ExchangeForm = ({ control }: ExchangeFormProps) => {
+  const isAndroid = useAndroidPlatform()
   const { data } = useFetchProducts()
   const { fields, remove, append } = useFieldArray({
     control,
@@ -24,7 +27,7 @@ export const ExchangeForm = ({ control }: ExchangeFormProps) => {
           control={control}
           name={`exchanges.${index}`}
           render={({ field: { onBlur, onChange, value, disabled } }) => (
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mb-2">
               <Picker
                 selectedValue={value.productId}
                 onValueChange={(productId, _) => {
@@ -40,7 +43,7 @@ export const ExchangeForm = ({ control }: ExchangeFormProps) => {
                     key={item.id}
                     label={item.name}
                     value={item.id}
-                    color="white"
+                    color={isAndroid ? '' : 'white'}
                   />
                 ))}
               </Picker>
@@ -56,11 +59,14 @@ export const ExchangeForm = ({ control }: ExchangeFormProps) => {
                 }}
                 keyboardType="number-pad"
                 editable={disabled}
-                className="text-white border-white"
+                className={cn(
+                  'text-white border-white',
+                  isAndroid ? 'mx-2' : ''
+                )}
               />
               <Button
                 title="Remover"
-                color="white"
+                color={isAndroid ? '' : 'white'}
                 onPress={() => remove(index)}
               />
             </View>
@@ -69,7 +75,7 @@ export const ExchangeForm = ({ control }: ExchangeFormProps) => {
       ))}
       <Button
         title="Adicionar Troca"
-        color="white"
+        color={isAndroid ? '' : 'white'}
         onPress={() =>
           append({
             productId: data?.length ? data[0].id : '0',

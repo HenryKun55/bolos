@@ -4,6 +4,8 @@ import { Picker } from '@react-native-picker/picker'
 import { Control, Controller, useFieldArray } from 'react-hook-form'
 import { View, Button } from 'react-native'
 import { FormData } from './validator'
+import { useAndroidPlatform } from '@/hooks/usePlatform'
+import { cn } from '@/lib/utils'
 
 type ProductFormProps = {
   nestedIndex: number
@@ -11,6 +13,7 @@ type ProductFormProps = {
 }
 
 const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
+  const isAndroid = useAndroidPlatform()
   const { data } = useFetchProducts()
   const { fields, remove, append } = useFieldArray({
     control,
@@ -18,14 +21,14 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
   })
 
   return (
-    <View>
+    <View className="mb-2">
       {fields.map((field, index) => (
         <Controller
           key={field.id}
           control={control}
           name={`clients.${nestedIndex}.products.${index}`}
           render={({ field: { onBlur, onChange, value, disabled } }) => (
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mb-2">
               <Picker
                 selectedValue={value.productId}
                 onValueChange={(productId, _) => {
@@ -41,7 +44,7 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
                     key={item.id}
                     label={item.name}
                     value={item.id}
-                    color="white"
+                    color={isAndroid ? '' : 'white'}
                   />
                 ))}
               </Picker>
@@ -57,11 +60,14 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
                 }}
                 keyboardType="number-pad"
                 editable={disabled}
-                className="text-white border-white"
+                className={cn(
+                  'text-white border-white',
+                  isAndroid ? 'mx-2' : ''
+                )}
               />
               <Button
                 title="Remover"
-                color="white"
+                color={isAndroid ? '' : 'white'}
                 onPress={() => remove(index)}
               />
             </View>
@@ -70,7 +76,7 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
       ))}
       <Button
         title="Adicionar produto"
-        color="white"
+        color={isAndroid ? '' : 'white'}
         onPress={() =>
           append({ productId: data?.length ? data[0].id : '0', amount: 1 })
         }
