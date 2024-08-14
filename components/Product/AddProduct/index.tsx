@@ -105,6 +105,7 @@ export const AddProduct = () => {
                     name="image"
                     inputProps={{
                       label: 'Url da imagem',
+                      testID: 'input-url-image',
                     }}
                   />
                 </View>
@@ -114,6 +115,7 @@ export const AddProduct = () => {
                     name="name"
                     inputProps={{
                       label: 'Nome',
+                      testID: 'input-name',
                     }}
                   />
                 </View>
@@ -124,6 +126,7 @@ export const AddProduct = () => {
                     inputProps={{
                       label: 'Preço de compra',
                       keyboardType: 'numeric',
+                      testID: 'input-purchase-price',
                     }}
                   />
                 </View>
@@ -134,6 +137,7 @@ export const AddProduct = () => {
                     inputProps={{
                       label: 'Preço de venda',
                       keyboardType: 'numeric',
+                      testID: 'input-sales-price',
                     }}
                   />
                 </View>
