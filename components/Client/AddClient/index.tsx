@@ -87,6 +87,7 @@ export const AddClient = () => {
                   name="name"
                   inputProps={{
                     label: 'Nome',
+                    testID: 'input-name',
                   }}
                 />
               </View>

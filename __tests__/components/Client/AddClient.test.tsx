@@ -7,11 +7,11 @@ jest.mock('@/database/api/clients', () => ({
 }))
 
 describe('AddClient Component', () => {
-  const mutateAsyncMock = jest.fn()
+  const mutateAsync = jest.fn().mockResolvedValue({})
 
   beforeEach(() => {
     ;(useCreateClient as jest.Mock).mockReturnValue({
-      mutateAsync: mutateAsyncMock,
+      mutateAsync,
     })
   })
 
@@ -19,18 +19,31 @@ describe('AddClient Component', () => {
     jest.clearAllMocks()
   })
 
+  it('should create a client when valid data is submitted', async () => {
+    const { findByText, findByTestId } = render(<AddClient />)
+
+    await waitFor(async () => {
+      fireEvent.press(await findByText('Adicionar cliente'))
+
+      const input = await findByTestId('input-name')
+      fireEvent.changeText(input, 'Jane Doe')
+
+      fireEvent.press(await findByText('Criar'))
+      expect(mutateAsync).toHaveBeenCalledWith({ name: 'Jane Doe' })
+    })
+  })
+
   it('should create a fake client', async () => {
     const { findByText } = render(<AddClient />)
 
-    fireEvent.press(await findByText('Adicionar cliente'))
-    fireEvent.press(await findByText('Criar Fake'))
-
     await waitFor(async () => {
-      expect(mutateAsyncMock).toHaveBeenCalledWith({
+      fireEvent.press(await findByText('Adicionar cliente'))
+      fireEvent.press(await findByText('Criar Fake'))
+
+      expect(mutateAsync).toHaveBeenCalledWith({
         name: expect.any(String),
       })
+      expect(mutateAsync).toHaveBeenCalledTimes(1)
     })
-
-    expect(mutateAsyncMock).toHaveBeenCalledTimes(1)
   })
 })

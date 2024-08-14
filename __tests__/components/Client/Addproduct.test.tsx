@@ -22,18 +22,17 @@ describe('AddProduct Component', () => {
   it('should create a fake product', async () => {
     const { findByText } = render(<AddProduct />)
 
-    fireEvent.press(await findByText('Adicionar produto'))
-    fireEvent.press(await findByText('Criar Fake'))
-
     await waitFor(async () => {
+      fireEvent.press(await findByText('Adicionar produto'))
+      fireEvent.press(await findByText('Criar Fake'))
+
       expect(mutateAsyncMock).toHaveBeenCalledWith({
         name: expect.any(String),
         image: expect.any(String),
         purchasePrice: expect.any(Number),
         salesPrice: expect.any(Number),
       })
+      expect(mutateAsyncMock).toHaveBeenCalledTimes(1)
     })
-
-    expect(mutateAsyncMock).toHaveBeenCalledTimes(1)
   })
 })
