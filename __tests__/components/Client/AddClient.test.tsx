@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native'
-import { useCreateClient } from '@/database/api/clients'
 import { AddClient } from '@/components/Client/AddClient'
+import { useCreateClient } from '@/database/api/clients'
 
 jest.mock('@/database/api/clients', () => ({
   useCreateClient: jest.fn(),
@@ -20,12 +20,12 @@ describe('AddClient Component', () => {
   })
 
   it('should create a fake client', async () => {
-    const { getByText } = render(<AddClient />)
+    const { findByText } = render(<AddClient />)
 
-    fireEvent.press(getByText('Adicionar cliente'))
+    fireEvent.press(await findByText('Adicionar cliente'))
+    fireEvent.press(await findByText('Criar Fake'))
 
-    await waitFor(() => {
-      fireEvent.press(getByText('Criar Fake'))
+    await waitFor(async () => {
       expect(mutateAsyncMock).toHaveBeenCalledWith({
         name: expect.any(String),
       })

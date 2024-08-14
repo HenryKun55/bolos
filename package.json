@@ -1,7 +1,7 @@
 {
   "name": "bolos",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -57,7 +57,8 @@
     "react-query": "^3.39.3",
     "tailwind-merge": "^2.4.0",
     "zod": "^3.23.8",
-    "expo-dev-client": "~4.0.22"
+    "expo-dev-client": "~4.0.22",
+    "expo-device": "~6.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

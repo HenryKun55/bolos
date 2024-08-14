@@ -1,4 +1,5 @@
 import { useFetchOrderById } from '@/database/api/orders'
+import { cn } from '@/lib/utils'
 import dayjs from 'dayjs'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView, Text, View } from 'react-native'
@@ -78,10 +79,13 @@ const OrderDetail = () => {
       {data.exchanges.length ? (
         <View className="mt-2">
           <Text className="text-white text-lg mb-2">Trocas</Text>
-          {data.exchanges.map((exchange) => (
+          {data.exchanges.map((exchange, index) => (
             <View
               key={exchange.id}
-              className="p-4 rounded-lg border border-white"
+              className={cn(
+                'p-4 rounded-lg border border-white',
+                index === 0 ? '' : 'mt-2'
+              )}
             >
               <View className="flex-row justify-between">
                 <Text className="text-white">{exchange.product.name}</Text>
