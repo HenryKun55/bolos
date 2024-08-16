@@ -63,7 +63,9 @@ const OrderDetail = () => {
                   .reduce(
                     (acc, curr) =>
                       acc +
-                      curr.productOrderDetail.product.salesPrice *
+                      (curr.productOrderDetail.product.productPrice.find(
+                        (p) => p.id === curr.productOrderDetail.productsPriceId
+                      )?.salesPrice || 0) *
                         curr.productOrderDetail.amount,
                     0
                   )

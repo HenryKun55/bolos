@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "571dd1d7-8116-4c07-a6fd-97a26f4843d9",
+  "id": "899b5eeb-5867-4c59-8d10-ec8cc1a65d10",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "clients": {
@@ -24,6 +24,78 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "exchange": {
+      "name": "exchange",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "order_id": {
+          "name": "order_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "products_price_id": {
+          "name": "products_price_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "exchange_order_id_orders_id_fk": {
+          "name": "exchange_order_id_orders_id_fk",
+          "tableFrom": "exchange",
+          "tableTo": "orders",
+          "columnsFrom": ["order_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "exchange_product_id_products_id_fk": {
+          "name": "exchange_product_id_products_id_fk",
+          "tableFrom": "exchange",
+          "tableTo": "products",
+          "columnsFrom": ["product_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "exchange_products_price_id_products_price_id_fk": {
+          "name": "exchange_products_price_id_products_price_id_fk",
+          "tableFrom": "exchange",
+          "tableTo": "products_price",
+          "columnsFrom": ["products_price_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -139,6 +211,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "products_price_id": {
+          "name": "products_price_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "order_detail_id": {
           "name": "order_detail_id",
           "type": "text",
@@ -161,6 +240,15 @@
           "tableFrom": "product_order_detail",
           "tableTo": "products",
           "columnsFrom": ["product_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_order_detail_products_price_id_products_price_id_fk": {
+          "name": "product_order_detail_products_price_id_products_price_id_fk",
+          "tableFrom": "product_order_detail",
+          "tableTo": "products_price",
+          "columnsFrom": ["products_price_id"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -239,6 +327,35 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        }
+      },
+      "indexes": {
+        "products_name_unique": {
+          "name": "products_name_unique",
+          "columns": ["name"],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "products_price": {
+      "name": "products_price",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "purchase_price": {
           "name": "purchase_price",
@@ -253,16 +370,28 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
         }
       },
-      "indexes": {
-        "products_name_unique": {
-          "name": "products_name_unique",
-          "columns": ["name"],
-          "isUnique": true
+      "indexes": {},
+      "foreignKeys": {
+        "products_price_product_id_products_id_fk": {
+          "name": "products_price_product_id_products_id_fk",
+          "tableFrom": "products_price",
+          "tableTo": "products",
+          "columnsFrom": ["product_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }

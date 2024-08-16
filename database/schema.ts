@@ -12,8 +12,6 @@ export type Product = {
   id: string
   name: string
   image: string
-  purchasePrice: number
-  salesPrice: number
 }
 
 export const products = sqliteTable('products', {
@@ -22,18 +20,51 @@ export const products = sqliteTable('products', {
     .$defaultFn(() => uuid.v4().toString()),
   name: text('name').notNull().unique(),
   image: text('image').notNull(),
-  purchasePrice: real('purchase_price').notNull(),
-  salesPrice: real('sales_price').notNull(),
 })
 
 export const productsRelations = relations(products, ({ many }) => ({
   productOrderDetail: many(productOrderDetail),
   exchanges: many(exchanges),
+  productPrice: many(productsPrice),
 }))
+
+export type ProductPrice = {
+  id: string
+  productId: string
+  salesPrice: number
+  purchasePrice: number
+}
+
+export const productsPrice = sqliteTable('products_price', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => uuid.v4().toString()),
+  productId: text('product_id')
+    .references(() => products.id)
+    .notNull(),
+  purchasePrice: real('purchase_price').notNull(),
+  salesPrice: real('sales_price').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(current_timestamp)`),
+})
+
+export const productsPriceRelations = relations(
+  productsPrice,
+  ({ one, many }) => ({
+    product: one(products, {
+      fields: [productsPrice.productId],
+      references: [products.id],
+    }),
+    productOrderDetail: many(productOrderDetail),
+  })
+)
 
 export type ProductOrderDetail = {
   id: string
   amount: number
+  productId: string
+  productsPriceId: string
   orderDetailId: string
 }
 
@@ -43,6 +74,9 @@ export const productOrderDetail = sqliteTable('product_order_detail', {
     .$defaultFn(() => uuid.v4().toString()),
   productId: text('product_id')
     .references(() => products.id)
+    .notNull(),
+  productsPriceId: text('products_price_id')
+    .references(() => productsPrice.id)
     .notNull(),
   orderDetailId: text('order_detail_id').notNull(),
   amount: integer('amount').notNull(),
@@ -54,6 +88,10 @@ export const productOrderDetailRelations = relations(
     product: one(products, {
       fields: [productOrderDetail.productId],
       references: [products.id],
+    }),
+    productsPrice: one(productsPrice, {
+      fields: [productOrderDetail.productsPriceId],
+      references: [productsPrice.id],
     }),
     productOrderDetailToOrderDetails: many(productOrderDetailToOrderDetails),
   })
@@ -176,6 +214,9 @@ export const exchanges = sqliteTable('exchange', {
   productId: text('product_id')
     .references(() => products.id)
     .notNull(),
+  productsPriceId: text('products_price_id')
+    .references(() => productsPrice.id)
+    .notNull(),
   amount: integer('amount').notNull(),
 })
 
@@ -187,5 +228,9 @@ export const exchangesRelations = relations(exchanges, ({ one }) => ({
   product: one(products, {
     fields: [exchanges.productId],
     references: [products.id],
+  }),
+  productsPrice: one(productsPrice, {
+    fields: [exchanges.productsPriceId],
+    references: [productsPrice.id],
   }),
 }))

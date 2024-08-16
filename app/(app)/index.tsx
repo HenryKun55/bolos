@@ -18,27 +18,27 @@ const Home = () => {
           </Text>
         </View>
         <View className="gap-4 p-4">
-          <TouchableOpacity className="border border-lime-200 px-4 py-10 rounded-xl">
-            <Link href="/clients">
+          <Link href="/clients" asChild>
+            <TouchableOpacity className="border border-lime-200 px-4 py-10 rounded-xl">
               <Text className="text-2xl text-white font-Nunito_500Medium">
                 Clientes
               </Text>
-            </Link>
-          </TouchableOpacity>
-          <TouchableOpacity className="border border-teal-300 px-4 py-10 rounded-xl">
-            <Link href="/products">
+            </TouchableOpacity>
+          </Link>
+          <Link href="/products" asChild>
+            <TouchableOpacity className="border border-teal-300 px-4 py-10 rounded-xl">
               <Text className="text-2xl text-white font-Nunito_500Medium">
                 Produtos
               </Text>
-            </Link>
-          </TouchableOpacity>
-          <TouchableOpacity className="border border-fuchsia-300 px-4 py-10 rounded-xl">
-            <Link href="/orders">
+            </TouchableOpacity>
+          </Link>
+          <Link href="/orders" asChild>
+            <TouchableOpacity className="border border-fuchsia-300 px-4 py-10 rounded-xl">
               <Text className="text-2xl text-white font-Nunito_500Medium">
                 Pedidos
               </Text>
-            </Link>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </Link>
         </View>
       </View>
     </SafeAreaView>

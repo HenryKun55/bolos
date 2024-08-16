@@ -34,6 +34,14 @@ const ordersApi = {
           productOrderDetails.map(async (product) => {
             const findProduct = await theDb.query.products.findFirst({
               where: (products, { eq }) => eq(products.id, product.productId),
+              with: {
+                productPrice: {
+                  orderBy: (productPrice, { desc }) => [
+                    desc(productPrice.createdAt),
+                  ],
+                  columns: { purchasePrice: true, salesPrice: true },
+                },
+              },
             })
             return {
               ...product,
@@ -43,12 +51,12 @@ const ordersApi = {
         )
 
         const totalPurchase = productsWithAmount.reduce(
-          (acc, obj) => acc + obj.purchasePrice! * obj.amount!,
+          (acc, obj) => acc + obj.productPrice![0].purchasePrice * obj.amount!,
           0
         )
 
         const totalSale = productsWithAmount.reduce(
-          (acc, obj) => acc + obj.salesPrice! * obj.amount!,
+          (acc, obj) => acc + obj.productPrice![0].salesPrice * obj.amount!,
           0
         )
 
@@ -66,6 +74,7 @@ const ordersApi = {
             .values(
               client.products.map((product) => ({
                 orderDetailId: orderDetail[0].id,
+                productsPriceId: product.productsPriceId,
                 productId: product.productId,
                 amount: product.amount,
               }))
@@ -82,6 +91,7 @@ const ordersApi = {
           await theDb.insert(schema.exchanges).values(
             input.exchanges.map((exchange) => ({
               productId: exchange.productId,
+              productsPriceId: exchange.productsPriceId,
               amount: exchange.amount,
               orderId: order[0].id,
             }))
@@ -110,7 +120,15 @@ const ordersApi = {
                   with: {
                     productOrderDetail: {
                       with: {
-                        product: true,
+                        product: {
+                          with: {
+                            productPrice: {
+                              orderBy: (productPrice, { desc }) => [
+                                desc(productPrice.createdAt),
+                              ],
+                            },
+                          },
+                        },
                       },
                     },
                   },

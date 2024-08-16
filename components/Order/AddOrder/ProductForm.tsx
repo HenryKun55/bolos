@@ -32,7 +32,13 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
               <Picker
                 selectedValue={value.productId}
                 onValueChange={(productId, _) => {
-                  onChange({ ...value, productId })
+                  onChange({
+                    ...value,
+                    productId,
+                    productsPriceId: data?.find(
+                      (product) => product.productPrice[0].id
+                    ),
+                  })
                 }}
                 onBlur={onBlur}
                 enabled={disabled}
@@ -54,7 +60,7 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
                 value={value?.amount?.toString()}
                 onChangeText={(text) => {
                   onChange({
-                    productId: value.productId,
+                    ...value,
                     amount: Number(text) ?? 1,
                   })
                 }}
@@ -78,7 +84,11 @@ const ProductForm = ({ control, nestedIndex }: ProductFormProps) => {
         title="Adicionar produto"
         color={isAndroid ? '' : 'white'}
         onPress={() =>
-          append({ productId: data?.length ? data[0].id : '0', amount: 1 })
+          append({
+            productId: data?.length ? data[0].id : '0',
+            productsPriceId: data?.length ? data[0].productPrice[0].id : '0',
+            amount: 1,
+          })
         }
       />
     </View>

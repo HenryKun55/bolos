@@ -20,7 +20,11 @@ export const AddOrder = () => {
   const [show, setShow] = useState(false)
   const { mutateAsync } = useCreateOrder()
 
-  const { control, handleSubmit } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       clients: undefined,
@@ -28,7 +32,6 @@ export const AddOrder = () => {
   })
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data)
     mutateAsync(data)
       .then(() => {
         Alert.alert('Pedido criado')
@@ -53,6 +56,8 @@ export const AddOrder = () => {
       },
     ])
   }
+
+  console.log(JSON.stringify(errors))
 
   return (
     <View>

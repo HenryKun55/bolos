@@ -1,4 +1,5 @@
 type ProductOrderDetail = {
+  productsPriceId: string
   productId: string
   amount: number
 }
@@ -9,6 +10,7 @@ type ClientOrderDetail = {
 }
 
 type Exhange = {
+  productsPriceId: string
   productId: string
   amount: number
 }

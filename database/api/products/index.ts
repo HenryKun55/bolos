@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from 'react-query'
-import { CreateProductRequest } from './types'
+import { CreateProductRequest, EditProductRequest } from './types'
 import { db } from '@/database'
 import * as schema from '../../schema'
 import { eq } from 'drizzle-orm'
 import { queryClient } from '@/providers/query.provider'
+import { useDatabase } from '@/database/database'
 
 const productKeys = {
   all: ['products'] as const,
@@ -16,21 +17,69 @@ const productKeys = {
 const productsApi = {
   useCreateProduct: () =>
     useMutation({
-      mutationFn: async (product: CreateProductRequest) => {
-        const response = await db.insert(schema.products).values(product)
-        return response
+      mutationFn: async ({
+        name,
+        image,
+        purchasePrice,
+        salesPrice,
+      }: CreateProductRequest) => {
+        await db.transaction(async (tx) => {
+          const product = await tx
+            .insert(schema.products)
+            .values({ name, image })
+            .returning({ productId: schema.productsPrice.id })
+          await tx.insert(schema.productsPrice).values({
+            productId: product[0].productId,
+            salesPrice,
+            purchasePrice,
+          })
+        })
       },
       onSuccess: () =>
         queryClient.invalidateQueries(productKeys.fetchProducts()),
     }),
-  useFetchProducts: () =>
-    useQuery({
+  useEditProduct: () =>
+    useMutation({
+      mutationFn: async ({
+        id,
+        name,
+        image,
+        salesPrice,
+        purchasePrice,
+      }: EditProductRequest) => {
+        await db.transaction(async (tx) => {
+          await tx
+            .update(schema.products)
+            .set({ name, image })
+            .where(eq(schema.products.id, id))
+          await tx.insert(schema.productsPrice).values({
+            productId: id,
+            salesPrice,
+            purchasePrice,
+          })
+        })
+      },
+      onSuccess: () =>
+        queryClient.invalidateQueries(productKeys.fetchProducts()),
+    }),
+  useFetchProducts: () => {
+    const theDb = useDatabase()
+    return useQuery({
       queryKey: productKeys.fetchProducts(),
       queryFn: async () => {
-        const response = await db.select().from(schema.products)
+        const response = await theDb.query.products.findMany({
+          with: {
+            productPrice: {
+              orderBy: (productPrice, { desc }) => [
+                desc(productPrice.createdAt),
+              ],
+            },
+          },
+        })
         return response
       },
-    }),
+    })
+  },
   useDeleteProduct: () =>
     useMutation({
       mutationFn: async (productId: string) => {
@@ -44,5 +93,9 @@ const productsApi = {
     }),
 }
 
-export const { useCreateProduct, useFetchProducts, useDeleteProduct } =
-  productsApi
+export const {
+  useCreateProduct,
+  useEditProduct,
+  useFetchProducts,
+  useDeleteProduct,
+} = productsApi

@@ -29,7 +29,7 @@ describe('AddProduct Component', () => {
   it('should create a product when valid data is submitted', async () => {
     const { findByText, findByTestId } = render(<AddProduct />)
 
-    await waitFor(async () => {
+    await act(async () => {
       fireEvent.press(await findByText('Adicionar produto'))
 
       const inputUrlImage = await findByTestId('input-url-image')
@@ -42,7 +42,9 @@ describe('AddProduct Component', () => {
       fireEvent.changeText(inputSalesPrice, '7.00')
 
       fireEvent.press(await findByText('Criar'))
+    })
 
+    await waitFor(async () => {
       expect(mutateAsync).toHaveBeenCalledWith({
         name: 'Produto',
         image: 'https://picsum.photos/50',
@@ -55,7 +57,7 @@ describe('AddProduct Component', () => {
   it('should create a fake product', async () => {
     const { findByText } = render(<AddProduct />)
 
-    await waitFor(async () => {
+    await act(async () => {
       fireEvent.press(await findByText('Adicionar produto'))
       fireEvent.press(await findByText('Criar Fake'))
 
@@ -65,6 +67,9 @@ describe('AddProduct Component', () => {
         purchasePrice: expect.any(Number),
         salesPrice: expect.any(Number),
       })
+    })
+
+    await waitFor(async () => {
       expect(mutateAsync).toHaveBeenCalledTimes(1)
     })
   })

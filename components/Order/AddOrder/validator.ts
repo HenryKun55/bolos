@@ -7,6 +7,7 @@ const schema = z.object({
       products: z
         .object({
           productId: z.string(),
+          productsPriceId: z.string(),
           amount: z.number().min(1, { message: 'Mínimo 1 quantidade' }),
         })
         .array()
@@ -17,6 +18,7 @@ const schema = z.object({
   exchanges: z
     .object({
       productId: z.string(),
+      productsPriceId: z.string(),
       amount: z.number().min(1, { message: 'Mínimo 1 quantidade' }),
     })
     .array()

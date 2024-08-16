@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from '@testing-library/react-native'
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native'
 import { AddClient } from '@/components/Client/AddClient'
 import { useCreateClient } from '@/database/api/clients'
 
@@ -22,13 +22,16 @@ describe('AddClient Component', () => {
   it('should create a client when valid data is submitted', async () => {
     const { findByText, findByTestId } = render(<AddClient />)
 
-    await waitFor(async () => {
+    await act(async () => {
       fireEvent.press(await findByText('Adicionar cliente'))
 
       const input = await findByTestId('input-name')
       fireEvent.changeText(input, 'Jane Doe')
 
       fireEvent.press(await findByText('Criar'))
+    })
+
+    await waitFor(() => {
       expect(mutateAsync).toHaveBeenCalledWith({ name: 'Jane Doe' })
     })
   })
@@ -36,13 +39,15 @@ describe('AddClient Component', () => {
   it('should create a fake client', async () => {
     const { findByText } = render(<AddClient />)
 
-    await waitFor(async () => {
+    await act(async () => {
       fireEvent.press(await findByText('Adicionar cliente'))
       fireEvent.press(await findByText('Criar Fake'))
 
       expect(mutateAsync).toHaveBeenCalledWith({
         name: expect.any(String),
       })
+    })
+    await waitFor(async () => {
       expect(mutateAsync).toHaveBeenCalledTimes(1)
     })
   })

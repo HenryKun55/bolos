@@ -3,6 +3,17 @@ CREATE TABLE `clients` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE `exchange` (
+	`id` text PRIMARY KEY NOT NULL,
+	`order_id` text NOT NULL,
+	`product_id` text NOT NULL,
+	`products_price_id` text NOT NULL,
+	`amount` integer NOT NULL,
+	FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`products_price_id`) REFERENCES `products_price`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `order_details` (
 	`id` text PRIMARY KEY NOT NULL,
 	`order_id` text NOT NULL,
@@ -22,9 +33,11 @@ CREATE TABLE `orders` (
 CREATE TABLE `product_order_detail` (
 	`id` text PRIMARY KEY NOT NULL,
 	`product_id` text NOT NULL,
+	`products_price_id` text NOT NULL,
 	`order_detail_id` text NOT NULL,
 	`amount` integer NOT NULL,
-	FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`products_price_id`) REFERENCES `products_price`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `product_order_detail_to_order_details` (
@@ -38,9 +51,16 @@ CREATE TABLE `product_order_detail_to_order_details` (
 CREATE TABLE `products` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
-	`image` text NOT NULL,
+	`image` text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `products_price` (
+	`id` text PRIMARY KEY NOT NULL,
+	`product_id` text NOT NULL,
 	`purchase_price` real NOT NULL,
-	`sales_price` real NOT NULL
+	`sales_price` real NOT NULL,
+	`created_at` text DEFAULT (current_timestamp) NOT NULL,
+	FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `products_name_unique` ON `products` (`name`);

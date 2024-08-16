@@ -157,7 +157,7 @@ export const AddProduct = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="p-4 rounded"
-                  onPress={() => setShow(false)}
+                  onPress={() => handleDismissModal()}
                 >
                   <Text className="text-white text-center">Fechar</Text>
                 </TouchableOpacity>
