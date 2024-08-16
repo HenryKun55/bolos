@@ -27,7 +27,13 @@ describe('AddProduct Component', () => {
   })
 
   it('should create a product when valid data is submitted', async () => {
+    jest.useFakeTimers()
+
     const { findByText, findByTestId } = render(<AddProduct />)
+
+    act(() => {
+      jest.runAllTimers()
+    })
 
     await act(async () => {
       fireEvent.press(await findByText('Adicionar produto'))
@@ -55,7 +61,13 @@ describe('AddProduct Component', () => {
   })
 
   it('should create a fake product', async () => {
+    jest.useFakeTimers()
+
     const { findByText } = render(<AddProduct />)
+
+    act(() => {
+      jest.runAllTimers()
+    })
 
     await act(async () => {
       fireEvent.press(await findByText('Adicionar produto'))

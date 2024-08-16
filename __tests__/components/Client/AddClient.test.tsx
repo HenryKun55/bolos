@@ -20,7 +20,13 @@ describe('AddClient Component', () => {
   })
 
   it('should create a client when valid data is submitted', async () => {
+    jest.useFakeTimers()
+
     const { findByText, findByTestId } = render(<AddClient />)
+
+    act(() => {
+      jest.runAllTimers()
+    })
 
     await act(async () => {
       fireEvent.press(await findByText('Adicionar cliente'))
@@ -35,7 +41,12 @@ describe('AddClient Component', () => {
   })
 
   it('should create a fake client', async () => {
+    jest.useFakeTimers()
     const { findByText } = render(<AddClient />)
+
+    act(() => {
+      jest.runAllTimers()
+    })
 
     await act(async () => {
       fireEvent.press(await findByText('Adicionar cliente'))
