@@ -12,12 +12,6 @@
     "lint": "expo lint",
     "prepare": "husky"
   },
-  "jest": {
-    "preset": "jest-expo",
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
-    ]
-  },
   "dependencies": {
     "@expo-google-fonts/nunito": "^0.2.3",
     "@expo/vector-icons": "^14.0.2",

@@ -24,10 +24,8 @@ describe('AddClient Component', () => {
 
     await act(async () => {
       fireEvent.press(await findByText('Adicionar cliente'))
-
       const input = await findByTestId('input-name')
       fireEvent.changeText(input, 'Jane Doe')
-
       fireEvent.press(await findByText('Criar'))
     })
 
