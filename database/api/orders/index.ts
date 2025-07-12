@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { db } from '@/database'
 import * as schema from '../../schema'
 import { CreateOrderRequest } from './types'
@@ -97,7 +97,8 @@ const ordersApi = {
             }))
           )
       },
-      onSuccess: () => queryClient.invalidateQueries(ordersKeys.fetchOrders()),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: ordersKeys.fetchOrders() }),
     })
   },
   useFetchOrderById: (id: string) => {

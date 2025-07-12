@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { db } from '@/database'
 import * as schema from '../../schema'
 import { eq } from 'drizzle-orm'
@@ -20,7 +20,8 @@ const clientsApi = {
         const response = await db.insert(schema.clients).values(input)
         return response
       },
-      onSuccess: () => queryClient.invalidateQueries(clientKeys.fetchClients()),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: clientKeys.fetchClients() }),
     }),
   useEditClient: () =>
     useMutation({
@@ -31,7 +32,8 @@ const clientsApi = {
           .where(eq(schema.clients.id, input.id))
         return response
       },
-      onSuccess: () => queryClient.invalidateQueries(clientKeys.fetchClients()),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: clientKeys.fetchClients() }),
     }),
   useFetchClients: () =>
     useQuery({
@@ -49,7 +51,8 @@ const clientsApi = {
           .where(eq(schema.clients.id, clientId))
         return response
       },
-      onSuccess: () => queryClient.invalidateQueries(clientKeys.fetchClients()),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: clientKeys.fetchClients() }),
     }),
 }
 

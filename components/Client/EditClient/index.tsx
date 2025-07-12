@@ -9,12 +9,12 @@ import {
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Modal from 'react-native-modal'
-import { Dispatch, SetStateAction, useEffect, useMemo } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 import { InputForm } from '@/components/Input'
 import schema, { FormData } from './validator'
 import { useEditClient } from '@/database/api/clients'
 import { EditClienttRequest } from '@/database/api/clients/types'
+import { CustomModal } from '@/components/Modal'
 
 type EditClientProps = {
   show: boolean
@@ -69,11 +69,10 @@ export const EditClient = ({
   }, [client?.id])
 
   return (
-    <Modal
-      avoidKeyboard
+    <CustomModal
       isVisible={show}
-      onBackdropPress={() => handleDismissModal()}
-      testID="modal-backdrop"
+      onClose={() => setShow(false)}
+      onBackdropPress={handleDismissModal}
     >
       <Pressable onPress={Keyboard.dismiss}>
         <View className="bg-gray-600 p-4 rounded-lg">
@@ -102,6 +101,6 @@ export const EditClient = ({
           </ScrollView>
         </View>
       </Pressable>
-    </Modal>
+    </CustomModal>
   )
 }

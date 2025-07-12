@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { CreateProductRequest, EditProductRequest } from './types'
 import { db } from '@/database'
 import * as schema from '../../schema'
@@ -36,7 +36,9 @@ const productsApi = {
         })
       },
       onSuccess: () =>
-        queryClient.invalidateQueries(productKeys.fetchProducts()),
+        queryClient.invalidateQueries({
+          queryKey: productKeys.fetchProducts(),
+        }),
     }),
   useEditProduct: () =>
     useMutation({
@@ -60,7 +62,9 @@ const productsApi = {
         })
       },
       onSuccess: () =>
-        queryClient.invalidateQueries(productKeys.fetchProducts()),
+        queryClient.invalidateQueries({
+          queryKey: productKeys.fetchProducts(),
+        }),
     }),
   useFetchProducts: () => {
     const theDb = useDatabase()
@@ -89,7 +93,9 @@ const productsApi = {
         return response
       },
       onSuccess: () =>
-        queryClient.invalidateQueries(productKeys.fetchProducts()),
+        queryClient.invalidateQueries({
+          queryKey: productKeys.fetchProducts(),
+        }),
     }),
 }
 

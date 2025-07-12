@@ -1,44 +1,49 @@
-import { Link } from 'expo-router'
-import {
-  SafeAreaView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { CardHome } from '@/components/NavCard'
+import { SafeAreaView, StatusBar, Text, View } from 'react-native'
 
 const Home = () => {
+  const userName = 'Janete'
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-800">
-      <StatusBar barStyle="light-content" />
-      <View className="flex-1">
-        <View className="p-4">
-          <Text className="text-xl text-white font-Nunito_500Medium">
-            Olá, Janete
+    <SafeAreaView className="flex-1 bg-stone-50">
+      <StatusBar barStyle="dark-content" backgroundColor="#f9fafb" />
+      <View className="flex-1 p-6">
+        {/* Cabeçalho */}
+        <View className="mb-8">
+          <Text className="text-3xl font-bold text-stone-800">
+            Olá, {userName}
+          </Text>
+          <Text className="text-base text-stone-500">
+            Pronta para adoçar o dia?
           </Text>
         </View>
-        <View className="gap-4 p-4">
-          <Link href="/clients" asChild>
-            <TouchableOpacity className="border border-lime-200 px-4 py-10 rounded-xl">
-              <Text className="text-2xl text-white font-Nunito_500Medium">
-                Clientes
-              </Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/products" asChild>
-            <TouchableOpacity className="border border-teal-300 px-4 py-10 rounded-xl">
-              <Text className="text-2xl text-white font-Nunito_500Medium">
-                Produtos
-              </Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/orders" asChild>
-            <TouchableOpacity className="border border-fuchsia-300 px-4 py-10 rounded-xl">
-              <Text className="text-2xl text-white font-Nunito_500Medium">
-                Pedidos
-              </Text>
-            </TouchableOpacity>
-          </Link>
+
+        {/* Navegação Principal em Grade */}
+        <View className="flex flex-row flex-wrap justify-between">
+          <CardHome
+            href="/clients"
+            iconName="users"
+            title="Clientes"
+            description="Gerencie seus clientes"
+            color="text-sky-800"
+            twClassName="bg-sky-100 mb-4"
+          />
+          <CardHome
+            href="/products"
+            iconName="package"
+            title="Produtos"
+            description="Veja seus bolos e doces"
+            color="text-emerald-800"
+            twClassName="bg-emerald-100 mb-4"
+          />
+          <CardHome
+            href="/orders"
+            iconName="clipboard"
+            title="Pedidos"
+            description="Consulte o histórico"
+            color="text-purple-800"
+            twClassName="bg-purple-100"
+          />
         </View>
       </View>
     </SafeAreaView>

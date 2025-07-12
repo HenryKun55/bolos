@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native'
 
 const Clients = () => {
   return (
-    <SafeAreaView className="flex-1 bg-gray-800">
+    <SafeAreaView className="flex-1 bg-stone-50">
       <ClientList />
       <AddClient />
     </SafeAreaView>

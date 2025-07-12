@@ -1,71 +1,126 @@
-import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native'
+import { FlatList, TouchableOpacity, View, Text } from 'react-native'
 import Feather from '@expo/vector-icons/Feather'
 import { useDeleteClient, useFetchClients } from '@/database/api/clients'
 import { EditClient } from './EditClient'
 import { EditClienttRequest } from '@/database/api/clients/types'
 import { useState } from 'react'
+import { CustomModal } from '@/components/Modal'
 
 export const ClientList = () => {
-  const { data } = useFetchClients()
-  const { mutateAsync } = useDeleteClient()
+  const { data: clients } = useFetchClients()
+  const { mutate: deleteClient } = useDeleteClient()
 
-  const [show, setShow] = useState(false)
-  const [client, setClient] = useState<EditClienttRequest | undefined>(
-    undefined
-  )
+  const [isEditModalVisible, setEditModalVisible] = useState(false)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<
+    EditClienttRequest | undefined
+  >(undefined)
 
-  const handleEdit = (input: EditClienttRequest) => {
-    setClient(input)
-    setShow(true)
+  const openEditModal = (client: EditClienttRequest) => {
+    setSelectedClient(client)
+    setEditModalVisible(true)
   }
 
-  const handleDelete = (clientId: string) => {
-    Alert.alert('Deletar', 'Remover cliente?', [
-      {
-        text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on remove product'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirmar',
-        onPress: () => {
-          mutateAsync(clientId).then(() => {
-            console.log('Client: ' + clientId + ' deleted.')
-          })
+  const openDeleteModal = (client: EditClienttRequest) => {
+    setSelectedClient(client)
+    setDeleteModalVisible(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (selectedClient) {
+      deleteClient(selectedClient.id, {
+        onSuccess: () => {
+          console.log(`Client ${selectedClient.name} deleted.`)
+          setDeleteModalVisible(false)
+          setSelectedClient(undefined)
         },
-      },
-    ])
+      })
+    }
   }
 
   return (
     <>
       <FlatList
-        className="flex-1 p-5"
-        data={data}
-        ItemSeparatorComponent={() => <View className="h-4" />}
-        ListEmptyComponent={
-          <View>
-            <Text className="text-white text-center">Sem clientes</Text>
-          </View>
-        }
-        ListFooterComponent={<View className="h-10" />}
+        data={clients}
+        className="px-6"
+        contentContainerStyle={{ paddingBottom: 100 }} // Espaço para o botão flutuante
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        ListEmptyComponent={<Text>Nenhum cliente por aqui</Text>}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleEdit(item)}>
-            <View className="gap-4 flex-row items-center">
-              <Text className="text-white text-2xl mr-auto">{item.name}</Text>
-              <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Feather name="trash" size={24} color="white" />
-              </TouchableOpacity>
+          <View className="bg-white p-4 rounded-xl border border-stone-200 flex-row items-center">
+            <View className="w-12 h-12 bg-sky-100 rounded-full items-center justify-center mr-4">
+              <Feather name="user" size={24} className="text-sky-800" />
             </View>
-          </TouchableOpacity>
+            <Text className="text-lg font-semibold text-stone-700 mr-auto">
+              {item.name}
+            </Text>
+            <TouchableOpacity
+              onPress={() => openEditModal(item)}
+              className="p-2"
+            >
+              <Feather name="edit-2" size={20} className="text-stone-500" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => openDeleteModal(item)}
+              className="p-2"
+            >
+              <Feather name="trash" size={20} className="text-red-500" />
+            </TouchableOpacity>
+          </View>
         )}
       />
-      <EditClient
-        show={show}
-        setShow={setShow}
-        client={client}
-        setClient={setClient}
-      />
+
+      {/* Modal para Editar Cliente */}
+      {selectedClient && (
+        <EditClient
+          show={isEditModalVisible}
+          setShow={setEditModalVisible}
+          client={selectedClient}
+          setClient={setSelectedClient}
+        />
+      )}
+
+      {/* Modal para Confirmar Exclusão */}
+      {selectedClient && (
+        <CustomModal
+          isVisible={isDeleteModalVisible}
+          onClose={() => setDeleteModalVisible(false)}
+        >
+          <View className="p-4">
+            <Feather
+              name="alert-triangle"
+              size={40}
+              className="text-red-500 text-center mb-4"
+            />
+            <Text className="text-xl font-bold text-center text-stone-800 mb-2">
+              Confirmar Exclusão
+            </Text>
+            <Text className="text-base text-stone-600 text-center mb-6">
+              Você tem certeza que deseja remover{' '}
+              <Text className="font-bold">{selectedClient.name}</Text>? Esta
+              ação não pode ser desfeita.
+            </Text>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                onPress={() => setDeleteModalVisible(false)}
+                className="flex-1 p-3 bg-stone-200 rounded-lg"
+              >
+                <Text className="text-center font-bold text-stone-700">
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteConfirm}
+                className="flex-1 p-3 bg-red-500 rounded-lg"
+              >
+                <Text className="text-center font-bold text-white">
+                  Sim, Excluir
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </CustomModal>
+      )}
     </>
   )
 }

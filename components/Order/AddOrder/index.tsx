@@ -9,12 +9,12 @@ import {
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Modal from 'react-native-modal'
 import { useState } from 'react'
 import schema, { FormData } from './validator'
 import { useCreateOrder } from '@/database/api/orders'
 import { ClientForm } from './ClientForm'
 import { ExchangeForm } from './ExchangeForm'
+import { CustomModal } from '@/components/Modal'
 
 export const AddOrder = () => {
   const [show, setShow] = useState(false)
@@ -66,11 +66,11 @@ export const AddOrder = () => {
           Adicionar pedido
         </Text>
       </TouchableOpacity>
-      <Modal
-        isVisible={show}
-        avoidKeyboard
-        onBackdropPress={() => handleDismissModal()}
+      <CustomModal
         className="py-10"
+        isVisible={show}
+        onClose={() => setShow(false)}
+        onBackdropPress={handleDismissModal}
       >
         <Pressable onPress={Keyboard.dismiss}>
           <View className="bg-gray-600 p-4 rounded-lg">
@@ -93,7 +93,7 @@ export const AddOrder = () => {
             </ScrollView>
           </View>
         </Pressable>
-      </Modal>
+      </CustomModal>
     </View>
   )
 }

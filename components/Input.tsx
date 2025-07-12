@@ -1,6 +1,5 @@
 import { forwardRef } from 'react'
-import { Text, TextInput, View, useColorScheme } from 'react-native'
-
+import { Text, TextInput, View } from 'react-native'
 import { cn } from '../lib/utils'
 import { Controller, FieldValues, UseControllerProps } from 'react-hook-form'
 
@@ -13,22 +12,22 @@ export interface InputProps
 
 const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
   ({ className, label, labelClasses, inputClasses, ...props }, ref) => {
-    const theme = useColorScheme() ?? 'light'
-
     return (
-      <View className={cn('flex flex-col gap-2.5', className)}>
+      <View className={cn('flex flex-col gap-1.5', className)}>
         {label && (
-          <Text className={cn('text-base text-white', labelClasses)}>
+          <Text
+            className={cn('text-base font-medium text-stone-700', labelClasses)}
+          >
             {label}
           </Text>
         )}
         <TextInput
           ref={ref}
           className={cn(
-            inputClasses,
-            'border border-input py-2.5 px-4 rounded-lg'
+            'border bg-stone-50 border-stone-300 text-stone-900 text-base py-3 px-4 rounded-lg focus:border-sky-500',
+            inputClasses
           )}
-          placeholderTextColor={theme === 'light' ? 'black' : 'white'}
+          placeholderTextColor="#9ca3af" // gray-400
           {...props}
         />
       </View>
@@ -37,7 +36,6 @@ const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
 )
 
 interface InputFormProps<T extends FieldValues> extends UseControllerProps<T> {
-  className?: string
   inputProps?: InputProps
 }
 
@@ -49,8 +47,9 @@ function InputForm<T extends FieldValues>({
   return (
     <Controller
       control={control}
+      name={name}
       render={({
-        field: { onBlur, onChange, value, disabled },
+        field: { onBlur, onChange, value },
         fieldState: { error },
       }) => (
         <View>
@@ -58,15 +57,17 @@ function InputForm<T extends FieldValues>({
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            editable={disabled}
             {...inputProps}
+            inputClasses={cn(
+              inputProps?.inputClasses,
+              error && 'border-red-500'
+            )}
           />
           {error?.message && (
-            <Text className="text-red-500 py-2">{error.message}</Text>
+            <Text className="text-red-500 text-sm mt-1">{error.message}</Text>
           )}
         </View>
       )}
-      name={name}
     />
   )
 }

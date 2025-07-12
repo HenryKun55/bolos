@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Modal from 'react-native-modal'
 import { useState } from 'react'
 import { InputForm } from '@/components/Input'
 import schema, { FormData } from './validator'
@@ -17,6 +16,7 @@ import { Image } from 'expo-image'
 import Feather from '@expo/vector-icons/Feather'
 import { useCreateProduct } from '@/database/api/products'
 import { faker } from '@faker-js/faker'
+import { CustomModal } from '@/components/Modal'
 
 export const AddProduct = () => {
   const [show, setShow] = useState(false)
@@ -78,10 +78,11 @@ export const AddProduct = () => {
           Adicionar produto
         </Text>
       </TouchableOpacity>
-      <Modal
+
+      <CustomModal
         isVisible={show}
-        avoidKeyboard
-        onBackdropPress={() => handleDismissModal()}
+        onClose={() => setShow(false)}
+        onBackdropPress={handleDismissModal}
       >
         <Pressable onPress={Keyboard.dismiss}>
           <View className="bg-gray-600 p-4 rounded-lg">
@@ -165,7 +166,7 @@ export const AddProduct = () => {
             </ScrollView>
           </View>
         </Pressable>
-      </Modal>
+      </CustomModal>
     </View>
   )
 }

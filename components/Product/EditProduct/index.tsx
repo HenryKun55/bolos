@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Modal from 'react-native-modal'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 import { InputForm } from '@/components/Input'
 import schema, { FormInputData, FormOutputData } from './validator'
@@ -17,6 +16,7 @@ import { Image } from 'expo-image'
 import Feather from '@expo/vector-icons/Feather'
 import { useEditProduct } from '@/database/api/products'
 import { EditProductInput } from '../ProductsList'
+import { CustomModal } from '@/components/Modal'
 
 type EditProductProps = {
   show: boolean
@@ -87,10 +87,10 @@ export const EditProduct = ({
   }, [product?.id])
 
   return (
-    <Modal
+    <CustomModal
       isVisible={show}
-      avoidKeyboard
-      onBackdropPress={() => handleDismissModal()}
+      onClose={() => setShow(false)}
+      onBackdropPress={handleDismissModal}
     >
       <Pressable onPress={Keyboard.dismiss}>
         <View className="bg-gray-600 p-4 rounded-lg">
@@ -168,6 +168,6 @@ export const EditProduct = ({
           </ScrollView>
         </View>
       </Pressable>
-    </Modal>
+    </CustomModal>
   )
 }
