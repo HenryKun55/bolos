@@ -6,15 +6,10 @@ export default function StackLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: '#1f2937' },
         headerTintColor: 'white',
+        headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerTitle: 'Início',
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen name="index" options={{ headerTitle: 'Início' }} />
       <Stack.Screen name="orders/index" options={{ headerTitle: 'Pedidos' }} />
       <Stack.Screen name="orders/[id]" options={{ headerTitle: 'Pedido' }} />
       <Stack.Screen name="products" options={{ headerTitle: 'Produtos' }} />

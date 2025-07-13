@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Alert,
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,7 +16,7 @@ import { CustomModal } from '@/components/Modal'
 import { Feather } from '@expo/vector-icons'
 
 export const AddClient = () => {
-  const [isModalVisible, setModalVisible] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const { mutateAsync: createClient, isPending } = useCreateClient()
 
   const { control, handleSubmit, reset } = useForm<FormData>({
@@ -25,12 +26,12 @@ export const AddClient = () => {
 
   const openModal = () => {
     reset()
-    setModalVisible(true)
+    setIsModalVisible(true)
   }
 
   const closeModal = () => {
     Keyboard.dismiss()
-    setModalVisible(false)
+    setIsModalVisible(false)
   }
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -45,6 +46,20 @@ export const AddClient = () => {
     })
   }
 
+  const handleDismissModal = () => {
+    Alert.alert('Cancelar', 'Cancelar cliente?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed on create client.'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirmar',
+        onPress: () => closeModal(),
+      },
+    ])
+  }
+
   return (
     <>
       <TouchableOpacity
@@ -54,8 +69,12 @@ export const AddClient = () => {
         <Feather name="plus" size={32} color="white" />
       </TouchableOpacity>
 
-      <CustomModal isVisible={isModalVisible} onClose={closeModal}>
-        <View className="p-5 pt-2">
+      <CustomModal
+        isVisible={isModalVisible}
+        onClose={handleDismissModal}
+        onBackdropPress={handleDismissModal}
+      >
+        <View className="p-6">
           <Text className="text-2xl font-bold text-stone-800 mb-6">
             Adicionar Novo Cliente
           </Text>

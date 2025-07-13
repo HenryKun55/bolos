@@ -1,105 +1,174 @@
-import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native'
-import { useDeleteProduct, useFetchProducts } from '@/database/api/products'
+import { FlatList, TouchableOpacity, View, Text } from 'react-native'
 import Feather from '@expo/vector-icons/Feather'
-import { Image } from 'expo-image'
-import { EditProduct as EditProductInput } from './EditProduct'
+import { useDeleteProduct, useFetchProducts } from '@/database/api/products'
+import { EditProduct } from './EditProduct'
 import { useState } from 'react'
-import { ProductPrice } from '@/database/schema'
+import { Image } from 'expo-image'
+import { CustomModal } from '@/components/Modal'
+import { ProductWithPrice } from '@/@types/product'
 
-export type EditProductInput = {
-  id: string
-  name: string
-  image: string
-  productPrice: ProductPrice[]
-}
+const PriceDisplay = ({
+  label,
+  value,
+  colorClass = 'text-stone-600',
+  twClassName,
+}: {
+  label: string
+  value: number
+  colorClass?: string
+  twClassName?: string
+}) => (
+  <View className={twClassName}>
+    <Text className="text-xs text-stone-500">{label}</Text>
+    <Text className={`text-base font-semibold ${colorClass}`}>
+      {value.toLocaleString('pt-br', {
+        style: 'currency',
+        currency: 'BRL',
+      })}
+    </Text>
+  </View>
+)
 
 export const ProductsList = () => {
-  const { data } = useFetchProducts()
-  const { mutateAsync } = useDeleteProduct()
+  const { data: products } = useFetchProducts()
+  const { mutate: deleteProduct } = useDeleteProduct()
 
-  const [show, setShow] = useState(false)
-  const [product, setProduct] = useState<EditProductInput | undefined>(
-    undefined
-  )
+  const [isEditModalVisible, setEditModalVisible] = useState(false)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<
+    ProductWithPrice | undefined
+  >(undefined)
 
-  const handleEdit = (input: EditProductInput) => {
-    setProduct(input)
-    setShow(true)
+  const openEditModal = (product: ProductWithPrice) => {
+    setSelectedProduct(product)
+    setEditModalVisible(true)
   }
 
-  const handleDelete = (productId: string) => {
-    Alert.alert('Deletar', 'Remover produto?', [
-      {
-        text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on remove product'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirmar',
-        onPress: () => {
-          mutateAsync(productId).then(() => {
-            console.log('Product: ' + productId + ' deleted.')
-          })
+  const openDeleteModal = (product: ProductWithPrice) => {
+    setSelectedProduct(product)
+    setDeleteModalVisible(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (selectedProduct) {
+      deleteProduct(selectedProduct.id, {
+        onSuccess: () => {
+          console.log(`Product ${selectedProduct.name} deleted.`)
+          setDeleteModalVisible(false)
+          setSelectedProduct(undefined)
         },
-      },
-    ])
+      })
+    }
   }
 
   return (
     <>
       <FlatList
-        className="flex-1 p-5"
-        data={data}
-        ItemSeparatorComponent={() => <View className="h-4" />}
-        ListEmptyComponent={
-          <View>
-            <Text className="text-white text-center">Sem produtos</Text>
-          </View>
-        }
-        ListFooterComponent={<View className="h-10" />}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleEdit(item)}>
-            <View className="gap-4 flex-row items-center">
-              <Image className="w-20 h-20 rounded-full" source={item.image} />
-              <Text className="text-white text-2xl mr-auto">{item.name}</Text>
-              <View>
-                <Text className="text-white">Compra</Text>
-                <Text className="text-white">
-                  {item.productPrice[0].purchasePrice.toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })}
-                </Text>
-              </View>
-              <View>
-                <Text className="text-white">Venda</Text>
+        data={products}
+        className="pt-4"
+        contentContainerStyle={{ paddingBottom: 100 }}
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        ListEmptyComponent={<Text>Nenhum produto cadastrado</Text>}
+        renderItem={({ item }) => {
+          const purchasePrice = item.productPrice[0]?.purchasePrice ?? 0
+          const salesPrice = item.productPrice[0]?.salesPrice ?? 0
+          const hasProfit = salesPrice > purchasePrice
+
+          return (
+            <View className="bg-white p-4 rounded-xl border border-stone-200 flex-row items-center">
+              <Image
+                source={{ uri: item.image }}
+                className="w-16 h-16 rounded-lg mr-4 bg-stone-100"
+                placeholder="L184iAoffQof00ayfQay~qj[fQj[" // Placeholder desfocado
+                transition={300}
+              />
+              <View className="flex-1 gap-1">
                 <Text
-                  className={
-                    item.productPrice[0].purchasePrice >
-                    item.productPrice[0].salesPrice
-                      ? 'text-red-300'
-                      : 'text-green-300'
-                  }
+                  className="text-lg font-bold text-stone-800"
+                  numberOfLines={1}
                 >
-                  {item.productPrice[0].salesPrice.toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })}
+                  {item.name}
                 </Text>
+                <View className="flex-row">
+                  <PriceDisplay
+                    twClassName="mr-1"
+                    label="Custo"
+                    value={purchasePrice}
+                  />
+                  <PriceDisplay
+                    label="Venda"
+                    value={salesPrice}
+                    colorClass={hasProfit ? 'text-green-600' : 'text-red-600'}
+                  />
+                </View>
               </View>
-              <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Feather name="trash" size={24} color="white" />
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={() => openEditModal(item)}
+                  className="p-2"
+                >
+                  <Feather name="edit-2" size={20} className="text-stone-500" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => openDeleteModal(item)}
+                  className="p-2"
+                >
+                  <Feather name="trash" size={20} className="text-red-500" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )
+        }}
+      />
+
+      {selectedProduct && (
+        <EditProduct
+          show={isEditModalVisible}
+          setShow={setEditModalVisible}
+          product={selectedProduct}
+          setProduct={setSelectedProduct}
+        />
+      )}
+
+      {selectedProduct && (
+        <CustomModal
+          isVisible={isDeleteModalVisible}
+          onClose={() => setDeleteModalVisible(false)}
+        >
+          <View className="p-4">
+            <Feather
+              name="alert-triangle"
+              size={40}
+              className="text-red-500 self-center mb-4"
+            />
+            <Text className="text-xl font-bold text-center text-stone-800 mb-2">
+              Confirmar Exclusão
+            </Text>
+            <Text className="text-base text-stone-600 text-center mb-6">
+              Deseja realmente remover o produto{' '}
+              <Text className="font-bold">{selectedProduct.name}</Text>?
+            </Text>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                onPress={() => setDeleteModalVisible(false)}
+                className="flex-1 p-3 bg-stone-200 rounded-lg"
+              >
+                <Text className="text-center font-bold text-stone-700">
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteConfirm}
+                className="flex-1 p-3 bg-red-500 rounded-lg"
+              >
+                <Text className="text-center font-bold text-white">
+                  Sim, Excluir
+                </Text>
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        )}
-      />
-      <EditProductInput
-        show={show}
-        setShow={setShow}
-        product={product}
-        setProduct={setProduct}
-      />
+          </View>
+        </CustomModal>
+      )}
     </>
   )
 }

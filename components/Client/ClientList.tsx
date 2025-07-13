@@ -42,7 +42,7 @@ export const ClientList = () => {
     <>
       <FlatList
         data={clients}
-        className="px-6"
+        className="pt-4"
         contentContainerStyle={{ paddingBottom: 100 }} // Espaço para o botão flutuante
         ItemSeparatorComponent={() => <View className="h-3" />}
         ListEmptyComponent={<Text>Nenhum cliente por aqui</Text>}

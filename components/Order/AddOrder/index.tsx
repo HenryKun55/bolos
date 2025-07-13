@@ -69,7 +69,7 @@ export const AddOrder = () => {
       <CustomModal
         className="py-10"
         isVisible={show}
-        onClose={() => setShow(false)}
+        onClose={handleDismissModal}
         onBackdropPress={handleDismissModal}
       >
         <Pressable onPress={Keyboard.dismiss}>

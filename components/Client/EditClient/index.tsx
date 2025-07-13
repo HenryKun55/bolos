@@ -71,7 +71,7 @@ export const EditClient = ({
   return (
     <CustomModal
       isVisible={show}
-      onClose={() => setShow(false)}
+      onClose={handleDismissModal}
       onBackdropPress={handleDismissModal}
     >
       <Pressable onPress={Keyboard.dismiss}>

@@ -24,7 +24,7 @@ const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
         <TextInput
           ref={ref}
           className={cn(
-            'border bg-stone-50 border-stone-300 text-stone-900 text-base py-3 px-4 rounded-lg focus:border-sky-500',
+            'border bg-stone-50 border-stone-300 text-stone-900 py-3 px-4 rounded-lg focus:border-sky-500',
             inputClasses
           )}
           placeholderTextColor="#9ca3af" // gray-400

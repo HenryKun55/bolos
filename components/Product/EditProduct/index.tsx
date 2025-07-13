@@ -1,11 +1,10 @@
 import {
-  Alert,
-  Keyboard,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
+  Alert,
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,14 +14,14 @@ import schema, { FormInputData, FormOutputData } from './validator'
 import { Image } from 'expo-image'
 import Feather from '@expo/vector-icons/Feather'
 import { useEditProduct } from '@/database/api/products'
-import { EditProductInput } from '../ProductsList'
 import { CustomModal } from '@/components/Modal'
+import { ProductWithPrice } from '@/@types/product'
 
 type EditProductProps = {
   show: boolean
   setShow: Dispatch<SetStateAction<boolean>>
-  product: EditProductInput | undefined
-  setProduct: Dispatch<SetStateAction<EditProductInput | undefined>>
+  product: ProductWithPrice | undefined
+  setProduct: Dispatch<SetStateAction<ProductWithPrice | undefined>>
 }
 
 export const EditProduct = ({
@@ -31,9 +30,9 @@ export const EditProduct = ({
   product,
   setProduct,
 }: EditProductProps) => {
-  const { mutateAsync } = useEditProduct()
+  const { mutateAsync: editProduct, isPending } = useEditProduct()
 
-  const { control, handleSubmit, watch, getValues, reset } = useForm<
+  const { control, handleSubmit, watch, reset } = useForm<
     FormInputData,
     any,
     FormOutputData
@@ -41,133 +40,111 @@ export const EditProduct = ({
     resolver: zodResolver(schema),
   })
 
-  const onSubmit: SubmitHandler<FormOutputData> = ({
-    id,
-    name,
-    image,
-    purchasePrice,
-    salesPrice,
-  }) => {
-    mutateAsync({ id, name, image, purchasePrice, salesPrice })
-      .then(() => {
-        Alert.alert('Produto editado.')
-        setShow(false)
-        setProduct(undefined)
-      })
-      .catch(() => {
-        Alert.alert('Ocorreu um erro.')
-      })
-  }
-
-  const handleDismissModal = () => {
-    Alert.alert('Cancelar', 'Cancelar produto?', [
-      {
-        text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on create order.'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirmar',
-        onPress: () => {
-          Keyboard.dismiss()
-          setShow(false)
-        },
-      },
-    ])
-  }
-
   useEffect(() => {
-    reset({
-      id: product?.id,
-      name: product?.name,
-      image: product?.image,
-      purchasePrice: String(product?.productPrice[0].purchasePrice),
-      salesPrice: String(product?.productPrice[0].salesPrice),
+    if (product) {
+      reset({
+        id: product.id,
+        name: product.name,
+        image: product.image,
+        purchasePrice: String(product.productPrice[0]?.purchasePrice ?? 0),
+        salesPrice: String(product.productPrice[0]?.salesPrice ?? 0),
+      })
+    }
+  }, [product, reset])
+
+  const closeModal = () => {
+    setShow(false)
+    setProduct(undefined)
+  }
+
+  const onSubmit: SubmitHandler<FormOutputData> = (data) => {
+    editProduct(data, {
+      onSuccess: () => {
+        console.log('Produto editado com sucesso!')
+        closeModal()
+      },
+      onError: (error) => {
+        console.error('Ocorreu um erro ao editar:', error)
+        Alert.alert('Ocorreu um erro ao editar: ' + error)
+      },
     })
-  }, [product?.id])
+  }
 
   return (
-    <CustomModal
-      isVisible={show}
-      onClose={() => setShow(false)}
-      onBackdropPress={handleDismissModal}
-    >
-      <Pressable onPress={Keyboard.dismiss}>
-        <View className="bg-gray-600 p-4 rounded-lg">
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <Text className="text-3xl font-Nunito_700Black text-white mb-5">
-              Editar produto
-            </Text>
-            <View className="gap-5">
-              <View>
-                {watch('image')?.length ? (
-                  <Image
-                    className="w-20 h-20 rounded-full"
-                    source={getValues().image}
-                    cachePolicy="none"
-                  />
-                ) : (
-                  <Feather name="upload" size={80} color="white" />
-                )}
-                <InputForm
-                  control={control}
-                  name="image"
-                  inputProps={{
-                    label: 'Url da imagem',
-                    testID: 'input-url-image',
-                  }}
-                />
+    <CustomModal isVisible={show} onClose={closeModal}>
+      <View className="p-5 pt-2">
+        <Text className="text-2xl font-bold text-stone-800 mb-6">
+          Editar Produto
+        </Text>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="items-center mb-4">
+            {watch('image') ? (
+              <Image
+                source={{ uri: watch('image') }}
+                className="w-24 h-24 rounded-lg bg-stone-100"
+              />
+            ) : (
+              <View className="w-24 h-24 rounded-lg bg-stone-100 items-center justify-center">
+                <Feather name="image" size={40} className="text-stone-400" />
               </View>
-              <View>
-                <InputForm
-                  control={control}
-                  name="name"
-                  inputProps={{
-                    label: 'Nome',
-                    testID: 'input-name',
-                  }}
-                />
-              </View>
-              <View>
-                <InputForm
-                  control={control}
-                  name="purchasePrice"
-                  inputProps={{
-                    label: 'Preço de compra',
-                    keyboardType: 'numeric',
-                    testID: 'input-purchase-price',
-                  }}
-                />
-              </View>
-              <View>
-                <InputForm
-                  control={control}
-                  name="salesPrice"
-                  inputProps={{
-                    label: 'Preço de venda',
-                    keyboardType: 'numeric',
-                    testID: 'input-sales-price',
-                  }}
-                />
-              </View>
-            </View>
-            <View className="gap-4 py-6">
-              <TouchableOpacity
-                className="p-4 rounded border border-white"
-                onPress={handleSubmit(onSubmit)}
-              >
-                <Text className="text-white text-center">Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="p-4 rounded"
-                onPress={() => handleDismissModal()}
-              >
-                <Text className="text-white text-center">Fechar</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      </Pressable>
+            )}
+          </View>
+
+          <View className="gap-4">
+            <InputForm
+              control={control}
+              name="name"
+              inputProps={{ label: 'Nome do Produto' }}
+            />
+            <InputForm
+              control={control}
+              name="image"
+              inputProps={{ label: 'URL da Imagem' }}
+            />
+            <InputForm
+              control={control}
+              name="purchasePrice"
+              inputProps={{
+                label: 'Preço de Custo (R$)',
+                keyboardType: 'numeric',
+              }}
+            />
+            <InputForm
+              control={control}
+              name="salesPrice"
+              inputProps={{
+                label: 'Preço de Venda (R$)',
+                keyboardType: 'numeric',
+              }}
+            />
+          </View>
+
+          <View className="flex-row gap-3 mt-8">
+            <TouchableOpacity
+              onPress={closeModal}
+              className="flex-1 p-4 bg-stone-200 rounded-lg"
+            >
+              <Text className="text-center font-bold text-stone-700">
+                Cancelar
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              disabled={isPending}
+              className="flex-1 p-4 bg-emerald-500 rounded-lg flex-row justify-center items-center"
+            >
+              {isPending ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-center font-bold text-white">Salvar</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
     </CustomModal>
   )
 }

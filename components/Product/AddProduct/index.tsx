@@ -19,10 +19,10 @@ import { faker } from '@faker-js/faker'
 import { CustomModal } from '@/components/Modal'
 
 export const AddProduct = () => {
-  const [show, setShow] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const { mutateAsync } = useCreateProduct()
 
-  const { control, handleSubmit, watch, getValues } = useForm<FormData>({
+  const { control, handleSubmit, watch, reset, getValues } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
@@ -32,11 +32,21 @@ export const AddProduct = () => {
     },
   })
 
+  const openModal = () => {
+    reset()
+    setIsModalVisible(true)
+  }
+
+  const closeModal = () => {
+    Keyboard.dismiss()
+    setIsModalVisible(false)
+  }
+
   const onSubmit: SubmitHandler<FormData> = (data) => {
     mutateAsync(data)
       .then(() => {
         Alert.alert('Produto criado.')
-        setShow(false)
+        closeModal()
       })
       .catch(() => {
         Alert.alert('Ocorreu um erro.')
@@ -58,40 +68,43 @@ export const AddProduct = () => {
     Alert.alert('Cancelar', 'Cancelar produto?', [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on create order.'),
+        onPress: () => console.log('Cancel Pressed on create product.'),
         style: 'cancel',
       },
       {
         text: 'Confirmar',
-        onPress: () => {
-          Keyboard.dismiss()
-          setShow(false)
-        },
+        onPress: () => closeModal(),
       },
     ])
   }
 
   return (
-    <View>
-      <TouchableOpacity onPress={() => setShow(true)}>
-        <Text className="w-full p-4 text-white text-xl bg-sky-500 text-center">
-          Adicionar produto
-        </Text>
+    <View className="flex-1">
+      <TouchableOpacity
+        onPress={openModal}
+        className="absolute bottom-6 right-6 bg-sky-500 w-16 h-16 rounded-full items-center justify-center shadow-lg"
+      >
+        <Feather name="plus" size={32} color="white" />
       </TouchableOpacity>
 
       <CustomModal
-        isVisible={show}
-        onClose={() => setShow(false)}
+        isVisible={isModalVisible}
+        onClose={handleDismissModal}
         onBackdropPress={handleDismissModal}
       >
-        <Pressable onPress={Keyboard.dismiss}>
-          <View className="bg-gray-600 p-4 rounded-lg">
-            <ScrollView keyboardShouldPersistTaps="handled">
-              <Text className="text-3xl font-Nunito_700Black text-white mb-5">
-                Criar produto
-              </Text>
-              <View className="gap-5">
-                <View>
+        <View className="p-6 h-[600px] justify-center border rounded-lg bg-white">
+          <Text className="text-2xl font-bold text-stone-800 mb-6">
+            Adicionar novo produto
+          </Text>
+
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
+          >
+            <Pressable onPress={Keyboard.dismiss}>
+              <View className="w-full gap-5">
+                <View className="w-full items-center">
                   {watch('image').length ? (
                     <Image
                       className="w-20 h-20 rounded-full"
@@ -99,8 +112,11 @@ export const AddProduct = () => {
                       cachePolicy="none"
                     />
                   ) : (
-                    <Feather name="upload" size={80} color="white" />
+                    <Feather name="image" size={80} color="gray" />
                   )}
+                </View>
+
+                <View className="w-full">
                   <InputForm
                     control={control}
                     name="image"
@@ -110,7 +126,8 @@ export const AddProduct = () => {
                     }}
                   />
                 </View>
-                <View>
+
+                <View className="w-full">
                   <InputForm
                     control={control}
                     name="name"
@@ -120,7 +137,8 @@ export const AddProduct = () => {
                     }}
                   />
                 </View>
-                <View>
+
+                <View className="w-full">
                   <InputForm
                     control={control}
                     name="purchasePrice"
@@ -131,7 +149,8 @@ export const AddProduct = () => {
                     }}
                   />
                 </View>
-                <View>
+
+                <View className="w-full">
                   <InputForm
                     control={control}
                     name="salesPrice"
@@ -143,9 +162,10 @@ export const AddProduct = () => {
                   />
                 </View>
               </View>
-              <View className="gap-4 py-6">
+
+              <View className="gap-4 mt-3 py-6">
                 <TouchableOpacity
-                  className="p-4 rounded border border-white"
+                  className="p-4 rounded border border-blue-300 bg-blue-200"
                   onPress={handleSubmit(onSubmit)}
                 >
                   <Text className="text-white text-center">Criar</Text>
@@ -157,15 +177,15 @@ export const AddProduct = () => {
                   <Text className="text-gray-900 text-center">Criar Fake</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="p-4 rounded"
+                  className="p-4 rounded "
                   onPress={() => handleDismissModal()}
                 >
-                  <Text className="text-white text-center">Fechar</Text>
+                  <Text className="text-red-400 text-center">Fechar</Text>
                 </TouchableOpacity>
               </View>
-            </ScrollView>
-          </View>
-        </Pressable>
+            </Pressable>
+          </ScrollView>
+        </View>
       </CustomModal>
     </View>
   )

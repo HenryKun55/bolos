@@ -66,6 +66,7 @@ const productsApi = {
           queryKey: productKeys.fetchProducts(),
         }),
     }),
+
   useFetchProducts: () => {
     const theDb = useDatabase()
     return useQuery({
@@ -84,6 +85,7 @@ const productsApi = {
       },
     })
   },
+
   useDeleteProduct: () =>
     useMutation({
       mutationFn: async (productId: string) => {
