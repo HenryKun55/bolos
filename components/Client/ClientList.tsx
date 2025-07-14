@@ -89,7 +89,6 @@ export const ClientList = () => {
         )}
       />
 
-      {/* Modal para Editar Cliente */}
       {selectedClient && (
         <EditClient
           show={isEditModalVisible}
@@ -100,18 +99,20 @@ export const ClientList = () => {
         />
       )}
 
-      {/* Modal para Confirmar Exclusão */}
       {selectedClient && (
         <CustomModal
           isVisible={isDeleteModalVisible}
           onClose={() => setDeleteModalVisible(false)}
+          twClassNameWrapper="mx-4"
         >
           <View className="p-4">
-            <Feather
-              name="alert-triangle"
-              size={40}
-              className="text-red-500 text-center mb-4"
-            />
+            <View className="items-center mb-2">
+              <Feather
+                name="alert-triangle"
+                size={40}
+                className="text-red-500"
+              />
+            </View>
             <Text className="text-xl font-bold text-center text-stone-800 mb-2">
               Confirmar Exclusão
             </Text>
