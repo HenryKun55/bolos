@@ -73,6 +73,8 @@ export const AddClient = () => {
         isVisible={isModalVisible}
         onClose={handleDismissModal}
         onBackdropPress={handleDismissModal}
+        twClassNameWrapper="px-8"
+        twClassNameContent="bg-white"
       >
         <View className="p-6">
           <Text className="text-2xl font-bold text-stone-800 mb-6">

@@ -1,8 +1,6 @@
 import {
+  ActivityIndicator,
   Alert,
-  Keyboard,
-  Pressable,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -18,18 +16,20 @@ import { CustomModal } from '@/components/Modal'
 
 type EditClientProps = {
   show: boolean
-  setShow: Dispatch<SetStateAction<boolean>>
+  closeModal: () => void
+  handleDismissModal: () => void
   client: EditClienttRequest | undefined
   setClient: Dispatch<SetStateAction<EditClienttRequest | undefined>>
 }
 
 export const EditClient = ({
   show,
-  setShow,
+  closeModal,
+  handleDismissModal,
   client,
   setClient,
 }: EditClientProps) => {
-  const { mutateAsync } = useEditClient()
+  const { isPending, mutateAsync } = useEditClient()
 
   const { control, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -40,25 +40,11 @@ export const EditClient = ({
       .then(() => {
         Alert.alert('Cliente editado.')
         setClient(undefined)
-        setShow(false)
+        closeModal()
       })
       .catch(() => {
         Alert.alert('Ocorreu um erro.')
       })
-  }
-
-  const handleDismissModal = () => {
-    Alert.alert('Cancelar', 'Cancelar cliente?', [
-      {
-        text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on create client.'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirmar',
-        onPress: () => setShow(false),
-      },
-    ])
   }
 
   useEffect(() => {
@@ -70,6 +56,8 @@ export const EditClient = ({
       isVisible={show}
       onClose={handleDismissModal}
       onBackdropPress={handleDismissModal}
+      twClassNameWrapper="px-8"
+      twClassNameContent="bg-white"
     >
       <View className="p-6">
         <Text className="text-2xl font-bold text-stone-800 mb-6">
@@ -87,12 +75,24 @@ export const EditClient = ({
           />
         </View>
 
-        <View className="gap-4 py-6">
+        <View className="flex-row gap-3 mt-8">
           <TouchableOpacity
-            className="p-4 rounded border border-white"
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleDismissModal}
+            className="flex-1 p-4 bg-stone-200 rounded-lg"
           >
-            <Text className="text-white text-center">Editar</Text>
+            <Text className="text-center font-bold text-stone-700">
+              Cancelar
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleSubmit(onSubmit)}
+            className="flex-1 p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
+          >
+            {isPending ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-center font-bold text-white">Salvar</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>

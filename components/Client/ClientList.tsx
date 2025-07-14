@@ -1,4 +1,4 @@
-import { FlatList, TouchableOpacity, View, Text } from 'react-native'
+import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native'
 import Feather from '@expo/vector-icons/Feather'
 import { useDeleteClient, useFetchClients } from '@/database/api/clients'
 import { EditClient } from './EditClient'
@@ -21,6 +21,11 @@ export const ClientList = () => {
     setEditModalVisible(true)
   }
 
+  const closeEditModal = () => {
+    setSelectedClient(undefined)
+    setEditModalVisible(false)
+  }
+
   const openDeleteModal = (client: EditClienttRequest) => {
     setSelectedClient(client)
     setDeleteModalVisible(true)
@@ -38,12 +43,26 @@ export const ClientList = () => {
     }
   }
 
+  const handleDismissEditModal = () => {
+    Alert.alert('Cancelar', 'Cancelar edição de cliente?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed on edit client.'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirmar',
+        onPress: () => closeEditModal(),
+      },
+    ])
+  }
+
   return (
     <>
       <FlatList
         data={clients}
         className="pt-4"
-        contentContainerStyle={{ paddingBottom: 100 }} // Espaço para o botão flutuante
+        contentContainerStyle={{ paddingBottom: 100 }}
         ItemSeparatorComponent={() => <View className="h-3" />}
         ListEmptyComponent={<Text>Nenhum cliente por aqui</Text>}
         renderItem={({ item }) => (
@@ -74,7 +93,8 @@ export const ClientList = () => {
       {selectedClient && (
         <EditClient
           show={isEditModalVisible}
-          setShow={setEditModalVisible}
+          closeModal={closeEditModal}
+          handleDismissModal={handleDismissEditModal}
           client={selectedClient}
           setClient={setSelectedClient}
         />
