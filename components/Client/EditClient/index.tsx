@@ -1,6 +1,8 @@
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   Text,
   TouchableOpacity,
   View,
@@ -39,11 +41,13 @@ export const EditClient = ({
     mutateAsync(data)
       .then(() => {
         Alert.alert('Cliente editado.')
+        console.log('Cliente editado com sucesso!', data)
         setClient(undefined)
         closeModal()
       })
-      .catch(() => {
-        Alert.alert('Ocorreu um erro.')
+      .catch((error) => {
+        console.error('Ocorreu um erro ao editar:', error)
+        Alert.alert('Ocorreu um erro ao editar: ' + error)
       })
   }
 
@@ -59,43 +63,47 @@ export const EditClient = ({
       twClassNameWrapper="px-8"
       twClassNameContent="bg-white"
     >
-      <View className="p-6">
-        <Text className="text-2xl font-bold text-stone-800 mb-6">
-          Editar cliente
-        </Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View className="p-6">
+          <Text className="text-2xl font-bold text-stone-800 mb-6">
+            Editar cliente
+          </Text>
 
-        <View>
-          <InputForm
-            control={control}
-            name="name"
-            inputProps={{
-              label: 'Nome',
-              testID: 'input-name',
-            }}
-          />
-        </View>
+          <View>
+            <InputForm
+              control={control}
+              name="name"
+              inputProps={{
+                label: 'Nome',
+                testID: 'input-name',
+              }}
+            />
+          </View>
 
-        <View className="flex-row gap-3 mt-8">
-          <TouchableOpacity
-            onPress={handleDismissModal}
-            className="flex-1 p-4 bg-stone-200 rounded-lg"
-          >
-            <Text className="text-center font-bold text-stone-700">
-              Cancelar
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            className="flex-1 p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
-          >
-            {isPending ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-center font-bold text-white">Salvar</Text>
-            )}
-          </TouchableOpacity>
+          <View className="flex-row gap-3 mt-8">
+            <TouchableOpacity
+              onPress={handleDismissModal}
+              className="flex-1 p-4 bg-stone-200 rounded-lg"
+            >
+              <Text className="text-center font-bold text-stone-700">
+                Cancelar
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              className="flex-1 p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
+            >
+              {isPending ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-center font-bold text-white">Salvar</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </CustomModal>
   )
 }

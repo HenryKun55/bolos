@@ -5,6 +5,8 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -76,42 +78,48 @@ export const AddClient = () => {
         twClassNameWrapper="px-8"
         twClassNameContent="bg-white"
       >
-        <View className="p-6">
-          <Text className="text-2xl font-bold text-stone-800 mb-6">
-            Adicionar Novo Cliente
-          </Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View className="p-6">
+            <Text className="text-2xl font-bold text-stone-800 mb-6">
+              Adicionar Novo Cliente
+            </Text>
 
-          <InputForm
-            control={control}
-            name="name"
-            inputProps={{
-              label: 'Nome do Cliente',
-              placeholder: 'Ex: Maria da Silva',
-            }}
-          />
+            <InputForm
+              control={control}
+              name="name"
+              inputProps={{
+                label: 'Nome do Cliente',
+                placeholder: 'Ex: Maria da Silva',
+              }}
+            />
 
-          <View className="flex-row gap-3 mt-8">
-            <TouchableOpacity
-              onPress={closeModal}
-              className="flex-1 p-4 bg-stone-200 rounded-lg"
-            >
-              <Text className="text-center font-bold text-stone-700">
-                Cancelar
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleSubmit(onSubmit)}
-              disabled={isPending}
-              className="flex-1 p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
-            >
-              {isPending ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-center font-bold text-white">Salvar</Text>
-              )}
-            </TouchableOpacity>
+            <View className="flex-row gap-3 mt-8">
+              <TouchableOpacity
+                onPress={closeModal}
+                className="flex-1 p-4 bg-stone-200 rounded-lg"
+              >
+                <Text className="text-center font-bold text-stone-700">
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSubmit(onSubmit)}
+                disabled={isPending}
+                className="flex-1 p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
+              >
+                {isPending ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text className="text-center font-bold text-white">
+                    Salvar
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </CustomModal>
     </>
   )

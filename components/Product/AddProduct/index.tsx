@@ -1,6 +1,9 @@
 import {
+  ActivityIndicator,
   Alert,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -20,9 +23,9 @@ import { CustomModal } from '@/components/Modal'
 
 export const AddProduct = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const { mutateAsync } = useCreateProduct()
+  const { mutateAsync, isPending } = useCreateProduct()
 
-  const { control, handleSubmit, watch, reset, getValues } = useForm<FormData>({
+  const { control, handleSubmit, watch, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
@@ -79,7 +82,7 @@ export const AddProduct = () => {
   }
 
   return (
-    <View className="flex-1">
+    <>
       <TouchableOpacity
         onPress={openModal}
         className="absolute bottom-6 right-6 bg-sky-500 w-16 h-16 rounded-full items-center justify-center shadow-lg"
@@ -91,103 +94,114 @@ export const AddProduct = () => {
         isVisible={isModalVisible}
         onClose={handleDismissModal}
         onBackdropPress={handleDismissModal}
-        twClassNameView="px-4"
+        twClassNameWrapper="px-8"
+        twClassNameContent="bg-white max-h-[80%] overflow-hidden"
       >
-        <View className="p-6 h-[600px] justify-center rounded-lg bg-white">
-          <Text className="text-2xl font-bold text-stone-800 mb-6">
-            Adicionar novo produto
-          </Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View className="p-6">
+            <Text className="text-2xl font-bold text-stone-800 mb-6">
+              Adicionar Novo Produto
+            </Text>
 
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
-          >
-            <Pressable onPress={Keyboard.dismiss}>
-              <View className="w-full gap-5">
-                <View className="w-full items-center">
-                  {watch('image').length ? (
+            <ScrollView
+              contentContainerStyle={{
+                paddingBlockEnd: 150,
+              }}
+            >
+              <Pressable onPress={Keyboard.dismiss}>
+                <View className="items-center mb-4">
+                  {watch('image') ? (
                     <Image
-                      className="w-20 h-20 rounded-full"
-                      source={getValues().image}
-                      cachePolicy="none"
+                      source={{ uri: watch('image') }}
+                      className="w-40 h-40 rounded-full"
                     />
                   ) : (
-                    <Feather name="image" size={80} color="gray" />
+                    <View className="w-40 h-40 rounded-lg bg-stone-100 items-center justify-center">
+                      <Feather
+                        name="image"
+                        size={40}
+                        className="text-stone-400"
+                      />
+                    </View>
                   )}
                 </View>
 
-                <View className="w-full">
-                  <InputForm
-                    control={control}
-                    name="image"
-                    inputProps={{
-                      label: 'Url da imagem',
-                      testID: 'input-url-image',
-                    }}
-                  />
+                <InputForm
+                  control={control}
+                  name="image"
+                  inputProps={{
+                    label: 'URL da Imagem',
+                    style: { marginBottom: 12 },
+                  }}
+                />
+
+                <InputForm
+                  control={control}
+                  name="name"
+                  inputProps={{
+                    label: 'Nome do Produto',
+                    style: { marginBottom: 12 },
+                  }}
+                />
+
+                <InputForm
+                  control={control}
+                  name="purchasePrice"
+                  inputProps={{
+                    label: 'Preço de compra',
+                    keyboardType: 'numeric',
+                    style: { marginBottom: 12 },
+                  }}
+                />
+
+                <InputForm
+                  control={control}
+                  name="salesPrice"
+                  inputProps={{
+                    label: 'Preço de venda',
+                    keyboardType: 'numeric',
+                  }}
+                />
+
+                <View className="flex-row mt-8 justify-between">
+                  <TouchableOpacity
+                    onPress={handleDismissModal}
+                    className="w-[48%] p-4 bg-stone-200 rounded-lg"
+                  >
+                    <Text className="text-center font-bold text-stone-700">
+                      Cancelar
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleSubmit(onSubmit)}
+                    className="w-[48%] p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
+                  >
+                    {isPending ? (
+                      <ActivityIndicator color="white" />
+                    ) : (
+                      <Text className="text-center font-bold text-white">
+                        Salvar
+                      </Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
 
-                <View className="w-full">
-                  <InputForm
-                    control={control}
-                    name="name"
-                    inputProps={{
-                      label: 'Nome',
-                      testID: 'input-name',
-                    }}
-                  />
-                </View>
-
-                <View className="w-full">
-                  <InputForm
-                    control={control}
-                    name="purchasePrice"
-                    inputProps={{
-                      label: 'Preço de compra',
-                      keyboardType: 'numeric',
-                      testID: 'input-purchase-price',
-                    }}
-                  />
-                </View>
-
-                <View className="w-full">
-                  <InputForm
-                    control={control}
-                    name="salesPrice"
-                    inputProps={{
-                      label: 'Preço de venda',
-                      keyboardType: 'numeric',
-                      testID: 'input-sales-price',
-                    }}
-                  />
-                </View>
-              </View>
-
-              <View className="gap-4 mt-3 py-6">
                 <TouchableOpacity
-                  className="p-4 rounded border border-blue-300 bg-blue-200"
-                  onPress={handleSubmit(onSubmit)}
+                  onPress={createFakeProdut}
+                  className="p-4 bg-green-500 rounded-lg mt-4"
                 >
-                  <Text className="text-white text-center">Criar</Text>
+                  <Text className="text-center font-bold text-white">
+                    Criar produto fake
+                  </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  className="p-4 bg-gray-300 rounded"
-                  onPress={() => createFakeProdut()}
-                >
-                  <Text className="text-gray-900 text-center">Criar Fake</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="p-4 rounded "
-                  onPress={() => handleDismissModal()}
-                >
-                  <Text className="text-red-400 text-center">Fechar</Text>
-                </TouchableOpacity>
-              </View>
-            </Pressable>
-          </ScrollView>
-        </View>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
       </CustomModal>
-    </View>
+    </>
   )
 }

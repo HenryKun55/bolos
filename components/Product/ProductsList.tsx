@@ -1,4 +1,4 @@
-import { FlatList, TouchableOpacity, View, Text } from 'react-native'
+import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native'
 import Feather from '@expo/vector-icons/Feather'
 import { useDeleteProduct, useFetchProducts } from '@/database/api/products'
 import { EditProduct } from './EditProduct'
@@ -44,12 +44,17 @@ export const ProductsList = () => {
     setEditModalVisible(true)
   }
 
+  const closeEditModal = () => {
+    setSelectedProduct(undefined)
+    setEditModalVisible(false)
+  }
+
   const openDeleteModal = (product: ProductWithPrice) => {
     setSelectedProduct(product)
     setDeleteModalVisible(true)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDelete = () => {
     if (selectedProduct) {
       deleteProduct(selectedProduct.id, {
         onSuccess: () => {
@@ -59,6 +64,33 @@ export const ProductsList = () => {
         },
       })
     }
+  }
+  const handleDeleteProductConfirmation = () => {
+    Alert.alert('Remover', 'Deseja remover o produto?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed on remove product.'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirmar',
+        onPress: () => handleDelete(),
+      },
+    ])
+  }
+
+  const handleDismissEditModal = () => {
+    Alert.alert('Cancelar', 'Cancelar edição de produto?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed on edit product.'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirmar',
+        onPress: () => closeEditModal(),
+      },
+    ])
   }
 
   return (
@@ -124,7 +156,8 @@ export const ProductsList = () => {
       {selectedProduct && (
         <EditProduct
           show={isEditModalVisible}
-          setShow={setEditModalVisible}
+          closeModal={closeEditModal}
+          handleDismissModal={handleDismissEditModal}
           product={selectedProduct}
           setProduct={setSelectedProduct}
         />
@@ -134,13 +167,16 @@ export const ProductsList = () => {
         <CustomModal
           isVisible={isDeleteModalVisible}
           onClose={() => setDeleteModalVisible(false)}
+          twClassNameWrapper="mx-4"
         >
           <View className="p-4">
-            <Feather
-              name="alert-triangle"
-              size={40}
-              className="text-red-500 self-center mb-4"
-            />
+            <View className="items-center mb-2">
+              <Feather
+                name="alert-triangle"
+                size={40}
+                className="text-red-500"
+              />
+            </View>
             <Text className="text-xl font-bold text-center text-stone-800 mb-2">
               Confirmar Exclusão
             </Text>
@@ -158,7 +194,7 @@ export const ProductsList = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleDeleteConfirm}
+                onPress={handleDeleteProductConfirmation}
                 className="flex-1 p-3 bg-red-500 rounded-lg"
               >
                 <Text className="text-center font-bold text-white">

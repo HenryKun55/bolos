@@ -5,7 +5,6 @@ import {
   Keyboard,
   ModalProps,
   Animated,
-  View,
   TouchableWithoutFeedback,
 } from 'react-native'
 

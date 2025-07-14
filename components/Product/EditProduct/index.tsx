@@ -7,6 +7,8 @@ import {
   Alert,
   Pressable,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,14 +23,16 @@ import { ProductWithPrice } from '@/@types/product'
 
 type EditProductProps = {
   show: boolean
-  setShow: Dispatch<SetStateAction<boolean>>
+  closeModal: () => void
+  handleDismissModal: () => void
   product: ProductWithPrice | undefined
   setProduct: Dispatch<SetStateAction<ProductWithPrice | undefined>>
 }
 
 export const EditProduct = ({
   show,
-  setShow,
+  closeModal,
+  handleDismissModal,
   product,
   setProduct,
 }: EditProductProps) => {
@@ -54,15 +58,12 @@ export const EditProduct = ({
     }
   }, [product, reset])
 
-  const closeModal = () => {
-    setShow(false)
-    setProduct(undefined)
-  }
-
   const onSubmit: SubmitHandler<FormOutputData> = (data) => {
     editProduct(data, {
       onSuccess: () => {
-        console.log('Produto editado com sucesso!')
+        Alert.alert('Produto editado.')
+        console.log('Produto editado com sucesso!', data)
+        setProduct(undefined)
         closeModal()
       },
       onError: (error) => {
@@ -72,47 +73,36 @@ export const EditProduct = ({
     })
   }
 
-  const handleDismissModal = () => {
-    Alert.alert('Cancelar', 'Cancelar edição?', [
-      {
-        text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on edit product.'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirmar',
-        onPress: () => closeModal(),
-      },
-    ])
-  }
-
   return (
     <CustomModal
       isVisible={show}
       onClose={handleDismissModal}
       onBackdropPress={handleDismissModal}
-      twClassNameView="px-4"
+      twClassNameWrapper="px-8"
+      twClassNameContent="bg-white max-h-[80%] overflow-hidden"
     >
-      <View className="p-6 h-[600px] justify-center rounded-lg bg-white">
-        <Text className="text-2xl font-bold text-stone-800 mb-6">
-          Editar Produto
-        </Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View className="p-6">
+          <Text className="text-2xl font-bold text-stone-800 mb-6">
+            Editar Produto
+          </Text>
 
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
-        >
-          <Pressable onPress={Keyboard.dismiss}>
-            <View className="w-full gap-5">
-              <View className="w-full items-center">
+          <ScrollView
+            contentContainerStyle={{
+              paddingBlockEnd: 150,
+            }}
+          >
+            <Pressable onPress={Keyboard.dismiss}>
+              <View className="items-center mb-4">
                 {watch('image') ? (
                   <Image
                     source={{ uri: watch('image') }}
                     className="w-40 h-40 rounded-full"
                   />
                 ) : (
-                  <View className="w-24 h-24 rounded-lg bg-stone-100 items-center justify-center">
+                  <View className="w-40 h-40 rounded-lg bg-stone-100 items-center justify-center">
                     <Feather
                       name="image"
                       size={40}
@@ -122,54 +112,56 @@ export const EditProduct = ({
                 )}
               </View>
 
-              <View className="w-full">
-                <InputForm
-                  control={control}
-                  name="name"
-                  inputProps={{ label: 'Nome do Produto' }}
-                />
-              </View>
-              <View className="w-full">
-                <InputForm
-                  control={control}
-                  name="image"
-                  inputProps={{ label: 'URL da Imagem' }}
-                />
-              </View>
-              <View className="w-full">
-                <InputForm
-                  control={control}
-                  name="purchasePrice"
-                  inputProps={{
-                    label: 'Preço de Custo (R$)',
-                    keyboardType: 'numeric',
-                  }}
-                />
-              </View>
-              <View className="w-full">
-                <InputForm
-                  control={control}
-                  name="salesPrice"
-                  inputProps={{
-                    label: 'Preço de Venda (R$)',
-                    keyboardType: 'numeric',
-                  }}
-                />
-              </View>
+              <InputForm
+                control={control}
+                name="image"
+                inputProps={{
+                  label: 'URL da Imagem',
+                  style: { marginBottom: 12 },
+                }}
+              />
 
-              <View className="flex-row gap-3 mt-8">
+              <InputForm
+                control={control}
+                name="name"
+                inputProps={{
+                  label: 'Nome do Produto',
+                  style: { marginBottom: 12 },
+                }}
+              />
+
+              <InputForm
+                control={control}
+                name="purchasePrice"
+                inputProps={{
+                  label: 'Preço de compra',
+                  keyboardType: 'numeric',
+                  style: { marginBottom: 12 },
+                }}
+              />
+
+              <InputForm
+                control={control}
+                name="salesPrice"
+                inputProps={{
+                  label: 'Preço de venda',
+                  keyboardType: 'numeric',
+                }}
+              />
+
+              <View className="flex-row mt-8 justify-between">
                 <TouchableOpacity
-                  onPress={closeModal}
-                  className="flex-1 p-4 bg-stone-200 rounded-lg"
+                  onPress={handleDismissModal}
+                  className="w-[48%] p-4 bg-stone-200 rounded-lg"
                 >
                   <Text className="text-center font-bold text-stone-700">
                     Cancelar
                   </Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={handleSubmit(onSubmit)}
-                  disabled={isPending}
-                  className="flex-1 p-4 bg-emerald-500 rounded-lg flex-row justify-center items-center"
+                  className="w-[48%] p-4 bg-sky-500 rounded-lg flex-row justify-center items-center"
                 >
                   {isPending ? (
                     <ActivityIndicator color="white" />
@@ -180,10 +172,10 @@ export const EditProduct = ({
                   )}
                 </TouchableOpacity>
               </View>
-            </View>
-          </Pressable>
-        </ScrollView>
-      </View>
+            </Pressable>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
     </CustomModal>
   )
 }

@@ -1,5 +1,6 @@
 import { CardHome } from '@/components/NavCard'
 import { SafeAreaView, StatusBar, Text, View } from 'react-native'
+import { ScrollView } from 'react-native'
 
 const Home = () => {
   const userName = 'Janete'
@@ -7,7 +8,7 @@ const Home = () => {
   return (
     <SafeAreaView className="flex-1 bg-stone-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f9fafb" />
-      <View className="flex-1 p-6">
+      <ScrollView className="flex-1 p-6">
         {/* Cabeçalho */}
         <View className="mb-8">
           <Text className="text-3xl font-bold text-stone-800">
@@ -45,7 +46,7 @@ const Home = () => {
             twClassName="bg-purple-100"
           />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
