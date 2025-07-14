@@ -91,8 +91,9 @@ export const AddProduct = () => {
         isVisible={isModalVisible}
         onClose={handleDismissModal}
         onBackdropPress={handleDismissModal}
+        twClassNameView="px-4"
       >
-        <View className="p-6 h-[600px] justify-center border rounded-lg bg-white">
+        <View className="p-6 h-[600px] justify-center rounded-lg bg-white">
           <Text className="text-2xl font-bold text-stone-800 mb-6">
             Adicionar novo produto
           </Text>

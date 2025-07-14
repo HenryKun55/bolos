@@ -51,15 +51,12 @@ export const EditClient = ({
     Alert.alert('Cancelar', 'Cancelar cliente?', [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed on create order.'),
+        onPress: () => console.log('Cancel Pressed on create client.'),
         style: 'cancel',
       },
       {
         text: 'Confirmar',
-        onPress: () => {
-          Keyboard.dismiss()
-          setShow(false)
-        },
+        onPress: () => setShow(false),
       },
     ])
   }
@@ -74,33 +71,31 @@ export const EditClient = ({
       onClose={handleDismissModal}
       onBackdropPress={handleDismissModal}
     >
-      <Pressable onPress={Keyboard.dismiss}>
-        <View className="bg-gray-600 p-4 rounded-lg">
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <Text className="text-3xl font-Nunito_700Black text-white mb-5">
-              Editar cliente
-            </Text>
-            <View>
-              <InputForm
-                control={control}
-                name="name"
-                inputProps={{
-                  label: 'Nome',
-                  testID: 'input-name',
-                }}
-              />
-            </View>
-            <View className="gap-4 py-6">
-              <TouchableOpacity
-                className="p-4 rounded border border-white"
-                onPress={handleSubmit(onSubmit)}
-              >
-                <Text className="text-white text-center">Editar</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
+      <View className="p-6">
+        <Text className="text-2xl font-bold text-stone-800 mb-6">
+          Editar cliente
+        </Text>
+
+        <View>
+          <InputForm
+            control={control}
+            name="name"
+            inputProps={{
+              label: 'Nome',
+              testID: 'input-name',
+            }}
+          />
         </View>
-      </Pressable>
+
+        <View className="gap-4 py-6">
+          <TouchableOpacity
+            className="p-4 rounded border border-white"
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text className="text-white text-center">Editar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </CustomModal>
   )
 }

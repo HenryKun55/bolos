@@ -15,6 +15,7 @@ interface CustomModalProps extends ModalProps {
   onBackdropPress?: () => void
   children: React.ReactNode
   backdropStyle?: 'blur' | 'light' | 'dark' | 'transparent'
+  twClassNameView?: string
 }
 
 export const CustomModal = ({
@@ -23,6 +24,7 @@ export const CustomModal = ({
   onBackdropPress,
   children,
   backdropStyle = 'light',
+  twClassNameView,
   ...modalProps
 }: CustomModalProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current
@@ -92,15 +94,15 @@ export const CustomModal = ({
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Animated.View
-          className={`flex-1 justify-center items-center ${getBackdropStyle()}`}
+          className={`bg-transparent flex-1 justify-center items-center ${getBackdropStyle()}`}
           style={{ opacity: fadeAnim }}
         >
           <Pressable
-            className="flex-1 justify-center items-center"
+            className="bg-transparent w-full flex-1 justify-center items-center"
             onPress={handleBackdropPress}
           >
             <Animated.View
-              className="bg-white rounded-2xl max-w-md shadow-2xl border border-stone-200"
+              className={`bg-transparent rounded-2xl w-full max-w-md shadow-2xl border border-stone-200 ${twClassNameView}`}
               style={{
                 transform: [{ scale: scaleAnim }],
                 shadowColor: '#000',
