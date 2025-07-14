@@ -31,7 +31,7 @@ export const ClientList = () => {
     setDeleteModalVisible(true)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteUser = () => {
     if (selectedClient) {
       deleteClient(selectedClient.id, {
         onSuccess: () => {
@@ -41,6 +41,20 @@ export const ClientList = () => {
         },
       })
     }
+  }
+
+  const handleDeleteUserConfirmation = () => {
+    Alert.alert('Remover', 'Deseja remover o cliente?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed on remove client.'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirmar',
+        onPress: () => handleDeleteUser(),
+      },
+    ])
   }
 
   const handleDismissEditModal = () => {
@@ -131,7 +145,7 @@ export const ClientList = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleDeleteConfirm}
+                onPress={handleDeleteUserConfirmation}
                 className="flex-1 p-3 bg-red-500 rounded-lg"
               >
                 <Text className="text-center font-bold text-white">
